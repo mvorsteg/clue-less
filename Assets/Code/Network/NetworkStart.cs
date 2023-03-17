@@ -10,7 +10,7 @@ public class NetworkStart : MonoBehaviour
     public string processName = "UNNAMED";
 
     public BaseNetworkInterface netIFace;
-    private void OnEnable()
+    public void Initialize(ClientConsole console)
     {
         if (isServer)
         {
@@ -27,6 +27,7 @@ public class NetworkStart : MonoBehaviour
         else
         {
             ClientNetworkInterface client = new ClientNetworkInterface(IPAddress.Loopback, 50003);
+            client.console = console;
             client.Initialize();
             client.processName = processName;
             client.Log("Starting with \"Client\" argument");
@@ -42,6 +43,14 @@ public class NetworkStart : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        if (isServer)
+        {
+            Initialize(null);
+        }
+    }
+    
     private void OnDisable()
     {
         if (isInitialzied)

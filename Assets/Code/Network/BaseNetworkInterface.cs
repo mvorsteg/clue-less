@@ -14,6 +14,7 @@ public abstract class BaseNetworkInterface
     protected NetworkStream networkStream; 
     protected bool isConnected;
     public string processName;
+    public ClientConsole console; // temp, this is really bad coupling
 
     public BaseNetworkInterface(IPAddress ipAddress, int portNum)
     {   
@@ -41,7 +42,11 @@ public abstract class BaseNetworkInterface
     public void Log(string message)
     {
         Debug.Log(String.Format("[{0}] {1}", processName, message));
-        Thread.Sleep(500);
+        if (console != null)
+        {
+            console.QueueMessageForDisplay(message);
+        }
+        //Thread.Sleep(500);
         // BaseNetworkInterface.Log(message);
     }
 }
