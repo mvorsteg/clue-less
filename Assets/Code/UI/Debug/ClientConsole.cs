@@ -7,18 +7,10 @@ using UnityEngine.UI;
 public class ClientConsole : MonoBehaviour
 {
     public InputField inputField;
-    private ClientNetworkInterface clientInterface;
-    public NetworkStart ns;
+    public BaseNetworkInterface netInterface;
     public GameObject newCommandPrefab;
     public Transform consoleParent;
-    private Queue<string> messageQueue;
-
-    private void Start()
-    {
-        messageQueue = new Queue<string>();
-        ns.Initialize(this);
-        clientInterface = (ClientNetworkInterface)(ns.netIFace); // VERY BAD PRACTICE BUT TEMPORARY
-    }
+    private Queue<string> messageQueue = new Queue<string>();
 
     private void Update()
     {
@@ -31,7 +23,10 @@ public class ClientConsole : MonoBehaviour
     public void SubmitCommand()
     {
         string text = inputField.text;
-        clientInterface.SendChatMessage(text);
+        if (netInterface is ClientNetworkInterface)
+        {
+            ((ClientNetworkInterface)netInterface).SendChatMessage(text);
+        }
         QueueMessageForDisplay(text);
     }
 
