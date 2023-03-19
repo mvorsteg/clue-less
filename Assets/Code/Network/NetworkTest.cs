@@ -39,7 +39,7 @@ public class NetworkTest
             string msg;
             while ((msg = Console.ReadLine()) != "quit")
             {
-                client.SendChatMessage(msg);
+                //client.SendMessage(msg);
             }
             Console.ReadKey();
         }

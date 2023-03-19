@@ -55,14 +55,13 @@ public class ServerNetworkInterface : BaseNetworkInterface
         connectedPlayers[id] = null;
     }
 
-    public void Broadcast(int senderID, string message)
+    public void Broadcast(int senderID, INetworkPacket pkt)
     {
         // forward received message to all players except the one who sent it
         for (int i = 0; i < maxPlayers; i++)
         {
             if (i != senderID && connectedPlayers[i] != null)
             {
-                ChatPacket pkt = new ChatPacket(false, senderID, message);
                 connectedPlayers[i].SendMessage(pkt);
             }
         }
@@ -136,33 +135,53 @@ public class ServerNetworkInterface : BaseNetworkInterface
             {
                 ConnectRequestPacket pkt = new ConnectRequestPacket(buffer);
                 Log(String.Format("Client{0} requested to join server", clientID, pkt.userName));
+
                 break;
             }
             case MessageIDs.Disconnect_ToServer :
-
+            {
                 break;
+            }
             case MessageIDs.Chat_ToServer :
             {
                 ChatPacket pkt = new ChatPacket(buffer);
                 Log(String.Format("Client{0} sent chat \"{1}\"", clientID, pkt.message));
-                Broadcast(clientID, pkt.message);
+                ChatPacket outPkt = new ChatPacket(false, pkt.senderID, pkt.message);
+                Broadcast(clientID, outPkt);
                 break;
             }
             case MessageIDs.CharUpdate_ToServer :
-
+            {
+                CharUpdatePacket pkt = new CharUpdatePacket(buffer);
+                Log(String.Format("Client{0} requested to change character to {1}", clientID, pkt.character.ToString()));
+                CharUpdatePacket outPkt = new CharUpdatePacket(false, pkt.character);
+                Broadcast(clientID, outPkt);
                 break;
+            }
             case MessageIDs.MoveToRoom_ToServer :
-
+            {
+                MoveToRoomPacket pkt = new MoveToRoomPacket(buffer);
+                Log(String.Format("Client{0} requested to move to {1}", clientID, pkt.room.ToString()));
+                MoveToRoomPacket outPkt = new MoveToRoomPacket(false, pkt.room);
+                Broadcast(clientID, outPkt);
                 break;
+            }
             case MessageIDs.Guess_ToServer :
-
+            {
+                GuessPacket pkt = new GuessPacket(buffer);
+                Log(String.Format("Client{0} guessed {1} used the {2} in the {3}", clientID, pkt.character.ToString(), pkt.weapon.ToString(), pkt.room.ToString()));
+                GuessPacket outPkt = new GuessPacket(false, pkt.isFinalGuess, pkt.character, pkt.weapon, pkt.room);
+                Broadcast(clientID, outPkt);
                 break;
+            }
             case MessageIDs.Reveal_ToServer :
-
+            {
                 break;
+            }
             default :
-
+            {
                 break;
+            }
 
         }
     }

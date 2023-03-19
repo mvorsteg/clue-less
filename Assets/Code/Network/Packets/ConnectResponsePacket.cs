@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 
 public struct ConnectResponsePacket : INetworkPacket
@@ -6,6 +7,7 @@ public struct ConnectResponsePacket : INetworkPacket
     public MessageIDs ID { get; private set; }
     public bool isAccepted;
     public int assignedId;
+    //public List<Tuple<int, string>> otherPlayers;
 
     public ConnectResponsePacket(bool isAccepted, int assignedId)
     {

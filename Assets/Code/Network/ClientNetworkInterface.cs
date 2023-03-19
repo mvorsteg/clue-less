@@ -61,9 +61,8 @@ public class ClientNetworkInterface : BaseNetworkInterface
         }
     }
 
-    public void SendChatMessage(string msg)
+    public void SendMessage(INetworkPacket pkt)
     {
-        ChatPacket pkt = new ChatPacket(true, netPlayer.id, msg);
         netPlayer.SendMessage(pkt);
     }
 
@@ -91,14 +90,23 @@ public class ClientNetworkInterface : BaseNetworkInterface
 
                 break;
             case MessageIDs.CharUpdate_ToClient :
-
+            {
+                CharUpdatePacket pkt = new CharUpdatePacket(buffer);
+                Log(String.Format("Client{0} requested to change character to {1}", clientID, pkt.character.ToString()));
                 break;
+            }
             case MessageIDs.MoveToRoom_ToClient :
-
+            {
+                MoveToRoomPacket pkt = new MoveToRoomPacket(buffer);
+                Log(String.Format("Client{0} requested to move to {1}", clientID, pkt.room.ToString()));
                 break;
+            }
             case MessageIDs.Guess_ToClient :
-
+            {
+                GuessPacket pkt = new GuessPacket(buffer);
+                Log(String.Format("Client{0} guessed {1} used the {2} in the {3}", clientID, pkt.character.ToString(), pkt.weapon.ToString(), pkt.room.ToString()));
                 break;
+            }
             case MessageIDs.Reveal_ToClient :
 
                 break;
