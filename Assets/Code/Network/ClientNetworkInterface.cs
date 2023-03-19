@@ -74,7 +74,14 @@ public class ClientNetworkInterface : BaseNetworkInterface
             case MessageIDs.Connect_ToClient :
             {
                 ConnectResponsePacket pkt = new ConnectResponsePacket(buffer);
-                Log(String.Format("Joined server"));
+                if (pkt.isAccepted)
+                {
+                    Log(String.Format("Joined server as {0} (Assigned ID is {1})", pkt.assignedCharacter, pkt.assignedCharacter));
+                }
+                else
+                {
+                    Log(String.Format("Rejected by server"));
+                }
                 break;
             }
             case MessageIDs.Disconnect_ToClient :

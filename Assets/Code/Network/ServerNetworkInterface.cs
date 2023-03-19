@@ -4,12 +4,14 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using UnityEngine;
 
 public class ServerNetworkInterface : BaseNetworkInterface
 {
     private int maxPlayers;
     private TcpListener tcpListener;
     private ConcurrentDictionary<int, NetworkEndpoint> connectedPlayers;
+    private HostEngine hostEngine;
 
     public ServerNetworkInterface(IPAddress ipAddress, int portNum, int maxClients) : base(ipAddress, portNum)
     {
@@ -29,6 +31,8 @@ public class ServerNetworkInterface : BaseNetworkInterface
         tcpListener = new TcpListener(IPAddress.Any, portNum);
         tcpListener.Start();
         
+        hostEngine = GameObject.FindAnyObjectByType<HostEngine>();  // temp, not 
+
         Thread listenThread = new Thread(ListenForConnections);
         listenThread.Start();
 
@@ -107,7 +111,7 @@ public class ServerNetworkInterface : BaseNetworkInterface
                 else
                 {
                     // failed to add player, don't leave client hanging
-                    ConnectResponsePacket pkt = new ConnectResponsePacket(false, netPlayer.id);
+                    ConnectResponsePacket pkt = new ConnectResponsePacket(false, -1, CharacterType.Mustard);
                     netPlayer.SendMessage(pkt);
                 }
             }
@@ -135,7 +139,16 @@ public class ServerNetworkInterface : BaseNetworkInterface
             {
                 ConnectRequestPacket pkt = new ConnectRequestPacket(buffer);
                 Log(String.Format("Client{0} requested to join server", clientID, pkt.userName));
-
+                ConnectResponsePacket outPkt;
+                if (hostEngine.AddPlayer(clientID, pkt.userName, out CharacterType assignedCharacter))
+                {
+                    outPkt = new ConnectResponsePacket(true, clientID, assignedCharacter);
+                }
+                else
+                {
+                    outPkt = new ConnectResponsePacket(false, clientID, assignedCharacter);
+                }
+                Broadcast(-1, outPkt);
                 break;
             }
             case MessageIDs.Disconnect_ToServer :
@@ -162,8 +175,17 @@ public class ServerNetworkInterface : BaseNetworkInterface
             {
                 MoveToRoomPacket pkt = new MoveToRoomPacket(buffer);
                 Log(String.Format("Client{0} requested to move to {1}", clientID, pkt.room.ToString()));
-                MoveToRoomPacket outPkt = new MoveToRoomPacket(false, pkt.room);
-                Broadcast(clientID, outPkt);
+                if (hostEngine.MovePlayer(clientID, pkt.room))
+                {
+                    MoveToRoomPacket outPkt = new MoveToRoomPacket(false, pkt.room);
+                    Broadcast(-1, outPkt);
+                    Log(String.Format("Moved Client{0} to {1}", clientID, pkt.room.ToString()));
+                }
+                else
+                {
+                    Log(String.Format("Illegal move"));
+                }
+                
                 break;
             }
             case MessageIDs.Guess_ToServer :

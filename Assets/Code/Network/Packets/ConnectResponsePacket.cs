@@ -7,13 +7,15 @@ public struct ConnectResponsePacket : INetworkPacket
     public MessageIDs ID { get; private set; }
     public bool isAccepted;
     public int assignedId;
+    public CharacterType assignedCharacter;
     //public List<Tuple<int, string>> otherPlayers;
 
-    public ConnectResponsePacket(bool isAccepted, int assignedId)
+    public ConnectResponsePacket(bool isAccepted, int assignedId, CharacterType assignedCharacter)
     {
         ID = MessageIDs.Connect_ToClient;
         this.isAccepted = isAccepted;
         this.assignedId = assignedId;
+        this.assignedCharacter = assignedCharacter;
     }
 
     public ConnectResponsePacket(byte[] buffer)
@@ -24,6 +26,8 @@ public struct ConnectResponsePacket : INetworkPacket
         isAccepted = BitConverter.ToBoolean(buffer, idx);
         idx += sizeof(bool);
         assignedId = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(buffer, idx));
+        idx += sizeof(Int32);
+        assignedCharacter = (CharacterType)IPAddress.NetworkToHostOrder(BitConverter.ToInt32(buffer, idx));
     }
 
     public byte[] GetBytes()
@@ -42,6 +46,8 @@ public struct ConnectResponsePacket : INetworkPacket
         tempBytes = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(assignedId));
         tempBytes.CopyTo(buffer, idx);
         idx += sizeof(Int32);
+        tempBytes = BitConverter.GetBytes(IPAddress.HostToNetworkOrder((int)assignedCharacter));
+        tempBytes.CopyTo(buffer, idx);
 
         return buffer;
     }
