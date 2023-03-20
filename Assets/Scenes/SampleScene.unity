@@ -966,6 +966,7 @@ GameObject:
   m_Component:
   - component: {fileID: 487082646}
   - component: {fileID: 487082647}
+  - component: {fileID: 487082648}
   m_Layer: 5
   m_Name: Guest
   m_TagString: Untagged
@@ -1017,6 +1018,19 @@ MonoBehaviour:
   portField: {fileID: 113215655}
   clientConsole: {fileID: 935969935}
   serverConsole: {fileID: 0}
+--- !u!114 &487082648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 487082645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e6f1dd73ef1dce47b88f3ae84936069, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  board: {fileID: 95753371}
 --- !u!1 &503871086
 GameObject:
   m_ObjectHideFlags: 0

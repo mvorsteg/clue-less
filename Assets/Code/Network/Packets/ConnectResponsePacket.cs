@@ -32,7 +32,7 @@ public struct ConnectResponsePacket : INetworkPacket
 
     public byte[] GetBytes()
     {
-        byte[] buffer = new byte[sizeof(Int32) + NetworkConstants.MAX_USER_NAME_LEN * sizeof(Char)];
+        byte[] buffer = new byte[sizeof(Int32) + sizeof(Boolean) + sizeof(Int32) + sizeof(Int32)];
         int idx = 0;
 
         byte[] tempBytes;
@@ -42,7 +42,7 @@ public struct ConnectResponsePacket : INetworkPacket
         idx += sizeof(Int32);
         tempBytes = BitConverter.GetBytes(isAccepted);
         tempBytes.CopyTo(buffer, idx);
-        idx += sizeof(Int32);
+        idx += sizeof(Boolean);
         tempBytes = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(assignedId));
         tempBytes.CopyTo(buffer, idx);
         idx += sizeof(Int32);

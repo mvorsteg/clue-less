@@ -36,7 +36,7 @@ public struct GuessPacket : INetworkPacket
 
     public byte[] GetBytes()
     {
-        byte[] buffer = new byte[sizeof(Int32) + NetworkConstants.MAX_USER_NAME_LEN * sizeof(Char)];
+        byte[] buffer = new byte[sizeof(Int32) + sizeof(Boolean) + sizeof(Int32) + sizeof(Int32)];
         int idx = 0;
 
         byte[] tempBytes;

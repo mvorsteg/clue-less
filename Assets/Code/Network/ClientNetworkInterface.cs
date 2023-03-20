@@ -4,11 +4,13 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using UnityEngine;
 
 public class ClientNetworkInterface : BaseNetworkInterface
 {
     private TcpClient tcpClient;
     private NetworkEndpoint netPlayer;
+    private GuestEngine guestEngine;
 
     public ClientNetworkInterface(IPAddress ipAddress, int portNum) : base (ipAddress, portNum)
     {
@@ -18,6 +20,7 @@ public class ClientNetworkInterface : BaseNetworkInterface
 
     public override void Initialize()
     {
+        guestEngine = GameObject.FindAnyObjectByType<GuestEngine>();  // temp, not how we're keeping this
         // create a new thread to handle network client
         Thread connectThread = new Thread(ConnectToServer);
         connectThread.Start();
@@ -76,7 +79,8 @@ public class ClientNetworkInterface : BaseNetworkInterface
                 ConnectResponsePacket pkt = new ConnectResponsePacket(buffer);
                 if (pkt.isAccepted)
                 {
-                    Log(String.Format("Joined server as {0} (Assigned ID is {1})", pkt.assignedCharacter, pkt.assignedCharacter));
+                    guestEngine.AssignFromServer(pkt.assignedId, pkt.assignedCharacter);
+                    Log(String.Format("Joined server as {0} (Assigned ID is {1})", pkt.assignedCharacter, pkt.assignedId));
                 }
                 else
                 {
@@ -99,7 +103,7 @@ public class ClientNetworkInterface : BaseNetworkInterface
             case MessageIDs.CharUpdate_ToClient :
             {
                 CharUpdatePacket pkt = new CharUpdatePacket(buffer);
-                Log(String.Format("Client{0} requested to change character to {1}", clientID, pkt.character.ToString()));
+                Log(String.Format("Client{0} changed character to {1}", clientID, pkt.character.ToString()));
                 break;
             }
             case MessageIDs.MoveToRoom_ToClient :

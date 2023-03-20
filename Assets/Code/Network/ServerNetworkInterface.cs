@@ -167,8 +167,16 @@ public class ServerNetworkInterface : BaseNetworkInterface
             {
                 CharUpdatePacket pkt = new CharUpdatePacket(buffer);
                 Log(String.Format("Client{0} requested to change character to {1}", clientID, pkt.character.ToString()));
-                CharUpdatePacket outPkt = new CharUpdatePacket(false, pkt.character);
-                Broadcast(clientID, outPkt);
+                if (hostEngine.UpdateCharacter(clientID, pkt.character))
+                {
+                    CharUpdatePacket outPkt = new CharUpdatePacket(false, pkt.character);Broadcast(clientID, outPkt);
+                    Broadcast(-1, outPkt);
+                    Log(String.Format("Changed {0} to {1}", clientID, pkt.character));
+                }
+                else
+                {
+                    Log(String.Format("Cannot change {0} to {1}", clientID, pkt.character));
+                }
                 break;
             }
             case MessageIDs.MoveToRoom_ToServer :

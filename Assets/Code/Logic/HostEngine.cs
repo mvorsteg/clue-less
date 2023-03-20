@@ -45,6 +45,19 @@ public class HostEngine : MonoBehaviour
         return false;
     }
 
+    public bool UpdateCharacter(int playerID, CharacterType newCharacter)
+    {
+        foreach (PlayerState player in players.Values)
+        {
+            if (player != null && player.character == newCharacter)
+            {
+                return false;
+            }
+        }
+        players[playerID].character = newCharacter;
+        return true;
+    }
+
     public bool MovePlayer(int playerID, RoomType destRoom)
     {
         if (players.TryGetValue(playerID, out PlayerState playerState))
