@@ -29,4 +29,13 @@ public class GuestEngine : MonoBehaviour
         Debug.Log(string.Format("Error adding player {0}", playerID));
         return false;
     }
+
+    public string GetPlayerName(int playerID)
+    {
+        if (otherPlayers.TryGetValue(playerID, out PlayerState player))
+        {
+            return player.playerName;
+        }
+        return string.Empty;
+    }
 }

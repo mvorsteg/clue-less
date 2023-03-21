@@ -5,14 +5,16 @@ using System.Text;
 public struct GuessPacket : INetworkPacket
 {
     public MessageIDs ID { get; private set; }
+    public int userID;
     public bool isFinalGuess;
     public CharacterType character;
     public WeaponType weapon;
     public RoomType room;
 
-    public GuessPacket(bool isToServer, bool isFinalGuess, CharacterType character, WeaponType weapon, RoomType room)
+    public GuessPacket(bool isToServer, int userID, bool isFinalGuess, CharacterType character, WeaponType weapon, RoomType room)
     {
         ID = isToServer ? MessageIDs.Guess_ToServer : MessageIDs.Guess_ToClient;
+        this.userID = userID;
         this.isFinalGuess = isFinalGuess;
         this.character = character;
         this.weapon = weapon;
@@ -23,6 +25,8 @@ public struct GuessPacket : INetworkPacket
     {
         int idx = 0;
         ID = (MessageIDs)IPAddress.NetworkToHostOrder(BitConverter.ToInt32(buffer, idx));
+        idx += sizeof(Int32);
+        userID = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(buffer, idx));
         idx += sizeof(Int32);
         isFinalGuess = BitConverter.ToBoolean(buffer, idx);
         idx += sizeof(Boolean);
@@ -36,12 +40,15 @@ public struct GuessPacket : INetworkPacket
 
     public byte[] GetBytes()
     {
-        byte[] buffer = new byte[sizeof(Int32) + sizeof(Boolean) + sizeof(Int32) + sizeof(Int32)];
+        byte[] buffer = new byte[sizeof(Int32) + sizeof(Int32) + sizeof(Boolean) + sizeof(Int32) + sizeof(Int32) + sizeof(Int32)];
         int idx = 0;
 
         byte[] tempBytes;
 
         tempBytes = BitConverter.GetBytes(IPAddress.HostToNetworkOrder((int)ID));
+        tempBytes.CopyTo(buffer, idx);
+        idx += sizeof(Int32);
+        tempBytes = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(userID));
         tempBytes.CopyTo(buffer, idx);
         idx += sizeof(Int32);
         tempBytes = BitConverter.GetBytes(isFinalGuess);

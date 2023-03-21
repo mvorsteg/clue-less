@@ -45,6 +45,19 @@ public class HostEngine : MonoBehaviour
         return false;
     }
 
+    public List<Tuple<int, string, CharacterType>> GetAllPlayerInfo()
+    {
+        List<Tuple<int, string, CharacterType>> allPlayerList = new List<Tuple<int, string, CharacterType>>();
+        foreach (PlayerState ps in players.Values)
+        {
+            if (ps != null)
+            {
+                allPlayerList.Add(new Tuple<int, string, CharacterType>(ps.playerID, ps.playerName, ps.character));
+            }
+        }
+        return allPlayerList;
+    }
+
     public bool UpdateCharacter(int playerID, CharacterType newCharacter)
     {
         foreach (PlayerState player in players.Values)

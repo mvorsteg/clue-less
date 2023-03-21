@@ -13,6 +13,7 @@ public class ClientConsole : MonoBehaviour
     public GameObject newCommandPrefab;
     public Transform consoleParent;
     private Queue<string> messageQueue = new Queue<string>();
+    public int id = -1;
 
     private void Update()
     {
@@ -30,14 +31,21 @@ public class ClientConsole : MonoBehaviour
         if (netInterface is ClientNetworkInterface)
         {
             ClientNetworkInterface clientInterface = (ClientNetworkInterface)netInterface;
-            switch (cmdType)
+            switch (cmdType.ToLower())
             {
+                case ("connect"):
+                {
+                    string nameStr = tokens[1];
+                    netInterface.processName = nameStr;
+                    netInterface.Initialize();
+                    break;
+                }
                 case ("char"):
                 {
                     string charStr = tokens[1];
                     if (Enum.TryParse<CharacterType>(charStr, true, out CharacterType charEnum))
                     {
-                        CharUpdatePacket pkt = new CharUpdatePacket(true, charEnum);
+                        CharUpdatePacket pkt = new CharUpdatePacket(true, id, charEnum);
                         clientInterface.SendMessage(pkt);
                     }
                     break;
@@ -46,7 +54,7 @@ public class ClientConsole : MonoBehaviour
                 {
                     string text = string.Join(" ", tokens.Skip(1).ToList<string>());
                     QueueMessageForDisplay(text);
-                    ChatPacket pkt = new ChatPacket(true, 0, text);
+                    ChatPacket pkt = new ChatPacket(true, id, text);
                     clientInterface.SendMessage(pkt);
                     break;
                 }
@@ -55,7 +63,7 @@ public class ClientConsole : MonoBehaviour
                     string roomStr = tokens[1];
                     if (Enum.TryParse<RoomType>(roomStr, true, out RoomType roomEnum))
                     {
-                        MoveToRoomPacket pkt = new MoveToRoomPacket(true, roomEnum);
+                        MoveToRoomPacket pkt = new MoveToRoomPacket(true, id, roomEnum);
                         clientInterface.SendMessage(pkt);
                     }
                     break;
@@ -69,7 +77,7 @@ public class ClientConsole : MonoBehaviour
                         Enum.TryParse<WeaponType>(weaponStr, true, out WeaponType weaponEnum) &&
                         Enum.TryParse<RoomType>(roomStr, true, out RoomType roomEnum))
                     {
-                        GuessPacket pkt = new GuessPacket(true, false, charEnum, weaponEnum, roomEnum);
+                        GuessPacket pkt = new GuessPacket(true, id, false, charEnum, weaponEnum, roomEnum);
                         clientInterface.SendMessage(pkt);
                     }
                     break;
@@ -83,7 +91,7 @@ public class ClientConsole : MonoBehaviour
                         Enum.TryParse<WeaponType>(weaponStr, true, out WeaponType weaponEnum) &&
                         Enum.TryParse<RoomType>(roomStr, true, out RoomType roomEnum))
                     {
-                        GuessPacket pkt = new GuessPacket(true, true, charEnum, weaponEnum, roomEnum);
+                        GuessPacket pkt = new GuessPacket(true, id, true, charEnum, weaponEnum, roomEnum);
                         clientInterface.SendMessage(pkt);
                     }
                     break;

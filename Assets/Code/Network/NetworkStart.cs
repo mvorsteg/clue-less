@@ -56,7 +56,7 @@ public class NetworkStart : MonoBehaviour
             
             // also create client that will listen on loopback
             ClientNetworkInterface client = new ClientNetworkInterface(IPAddress.Loopback, port);
-            client.Initialize();
+            //client.Initialize();
             client.console = clientConsole;
             client.console.netInterface = client;
             client.processName = "Host Client";
@@ -67,7 +67,7 @@ public class NetworkStart : MonoBehaviour
         else
         {
             ClientNetworkInterface client = new ClientNetworkInterface(address, port);
-            client.Initialize();
+            //client.Initialize();
             client.console = clientConsole;
             client.console.netInterface = client;
             client.processName = processName;

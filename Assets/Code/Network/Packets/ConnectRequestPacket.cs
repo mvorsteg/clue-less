@@ -18,7 +18,7 @@ public struct ConnectRequestPacket : INetworkPacket
         int idx = 0;
         ID = (MessageIDs)IPAddress.NetworkToHostOrder(BitConverter.ToInt32(buffer, idx));
         idx += sizeof(Int32);
-        userName = Encoding.ASCII.GetString(buffer, idx, NetworkConstants.MAX_USER_NAME_LEN);
+        userName = Encoding.ASCII.GetString(buffer, idx, NetworkConstants.MAX_USER_NAME_LEN).TrimEnd((Char)0);
     }
 
     public byte[] GetBytes()

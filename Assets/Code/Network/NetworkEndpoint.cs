@@ -18,6 +18,7 @@ public class NetworkEndpoint
     {
         this.tcpClient = tcpClient;
         this.netInterface = netInterface;
+        id = -1;
         networkStream = tcpClient.GetStream();
     }
 

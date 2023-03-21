@@ -16,11 +16,11 @@ public class ClientNetworkInterface : BaseNetworkInterface
     {
         tcpClient = new TcpClient();
         isConnected = true;
+        guestEngine = GameObject.FindAnyObjectByType<GuestEngine>();  // temp, not how we're keeping this
     }
 
     public override void Initialize()
     {
-        guestEngine = GameObject.FindAnyObjectByType<GuestEngine>();  // temp, not how we're keeping this
         // create a new thread to handle network client
         Thread connectThread = new Thread(ConnectToServer);
         connectThread.Start();
@@ -54,7 +54,7 @@ public class ClientNetworkInterface : BaseNetworkInterface
         }
 
         // send initial connect message so server knows our name
-        ConnectRequestPacket pkt = new ConnectRequestPacket("TestUserName");
+        ConnectRequestPacket pkt = new ConnectRequestPacket(processName);
         netPlayer.SendMessage(pkt);
 
         // begin processing messages from server 
@@ -77,15 +77,39 @@ public class ClientNetworkInterface : BaseNetworkInterface
             case MessageIDs.Connect_ToClient :
             {
                 ConnectResponsePacket pkt = new ConnectResponsePacket(buffer);
-                if (pkt.isAccepted)
+                // only accept if uninitialized
+                if (netPlayer.id < 0)
                 {
-                    guestEngine.AssignFromServer(pkt.assignedId, pkt.assignedCharacter);
-                    Log(String.Format("Joined server as {0} (Assigned ID is {1})", pkt.assignedCharacter, pkt.assignedId));
+                    if (pkt.isAccepted)
+                    {
+                        guestEngine.AssignFromServer(pkt.assignedId, pkt.assignedCharacter);
+                        netPlayer.id = pkt.assignedId;
+                        Log(String.Format("Joined server as {0} (Assigned ID is {1})", pkt.assignedCharacter, pkt.assignedId));
+
+                        // record all other players
+                        foreach (Tuple<int, string, CharacterType> playerInfo in pkt.otherPlayers)
+                        {
+                            if (playerInfo.Item1 >= 0)
+                            {
+                                guestEngine.AddPlayer(playerInfo.Item1, playerInfo.Item2, playerInfo.Item3);
+                                Log(String.Format("{0} is playing as {1} (Assigned ID is {2})", playerInfo.Item2, playerInfo.Item3.ToString(), playerInfo.Item1));
+                            }
+                        }
+                        // temp
+                        console.id = pkt.assignedId;
+                    }
+                    else
+                    {
+                        Log(String.Format("Rejected by server"));
+                    }
                 }
-                else
-                {
-                    Log(String.Format("Rejected by server"));
-                }
+                break;
+            }
+            case MessageIDs.ConnectForward_ToClient :
+            {
+                ConnectForwardPacket pkt = new ConnectForwardPacket(buffer);
+                guestEngine.AddPlayer(pkt.assignedId, pkt.userName, pkt.assignedCharacter);
+                Log(String.Format("{0} Joined server as {1} (Assigned ID is {2})", pkt.userName, pkt.assignedCharacter, pkt.assignedId));
                 break;
             }
             case MessageIDs.Disconnect_ToClient :
@@ -94,7 +118,10 @@ public class ClientNetworkInterface : BaseNetworkInterface
             case MessageIDs.Chat_ToClient :
             {
                 ChatPacket pkt = new ChatPacket(buffer);
-                Log(String.Format("Client{0} sent chat \"{1}\"", clientID, pkt.message));
+                if (pkt.senderID != clientID)
+                {
+                    Log(String.Format("{0} sent chat \"{1}\"", guestEngine.GetPlayerName(pkt.senderID), pkt.message));
+                }
                 break;
             }
             case MessageIDs.GameStart_ToClient :
@@ -103,19 +130,40 @@ public class ClientNetworkInterface : BaseNetworkInterface
             case MessageIDs.CharUpdate_ToClient :
             {
                 CharUpdatePacket pkt = new CharUpdatePacket(buffer);
-                Log(String.Format("Client{0} changed character to {1}", clientID, pkt.character.ToString()));
+                if (pkt.userID == clientID)
+                {
+                    Log(String.Format("Changed character to {0}", pkt.character.ToString()));
+                }
+                else
+                {
+                    Log(String.Format("{0} changed character to {1}", guestEngine.GetPlayerName(pkt.userID), pkt.character.ToString()));
+                }
                 break;
             }
             case MessageIDs.MoveToRoom_ToClient :
             {
                 MoveToRoomPacket pkt = new MoveToRoomPacket(buffer);
-                Log(String.Format("Client{0} requested to move to {1}", clientID, pkt.room.ToString()));
+                if (pkt.userID == clientID)
+                {
+                    Log(String.Format("Moved to {0}", clientID, pkt.room.ToString()));
+                }
+                else
+                {
+                    Log(String.Format("{0} requested to move to {1}", guestEngine.GetPlayerName(pkt.userID), pkt.room.ToString()));
+                }
                 break;
             }
             case MessageIDs.Guess_ToClient :
             {
                 GuessPacket pkt = new GuessPacket(buffer);
-                Log(String.Format("Client{0} guessed {1} used the {2} in the {3}", clientID, pkt.character.ToString(), pkt.weapon.ToString(), pkt.room.ToString()));
+                if (pkt.userID == clientID)
+                {
+                    Log(String.Format("Guessed {0} used the {1} in the {2}", pkt.character.ToString(), pkt.weapon.ToString(), pkt.room.ToString()));
+                }
+                else
+                {
+                    Log(String.Format("{0} guessed {1} used the {2} in the {3}", guestEngine.GetPlayerName(pkt.userID), pkt.character.ToString(), pkt.weapon.ToString(), pkt.room.ToString()));
+                }
                 break;
             }
             case MessageIDs.Reveal_ToClient :

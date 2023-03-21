@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -111,7 +112,7 @@ public class ServerNetworkInterface : BaseNetworkInterface
                 else
                 {
                     // failed to add player, don't leave client hanging
-                    ConnectResponsePacket pkt = new ConnectResponsePacket(false, -1, CharacterType.Mustard);
+                    ConnectResponsePacket pkt = new ConnectResponsePacket(false, -1, CharacterType.Mustard, null);
                     netPlayer.SendMessage(pkt);
                 }
             }
@@ -137,18 +138,25 @@ public class ServerNetworkInterface : BaseNetworkInterface
         {
             case MessageIDs.Connect_ToServer :
             {
+                List<Tuple<int, string, CharacterType>> allPlayers = hostEngine.GetAllPlayerInfo();
                 ConnectRequestPacket pkt = new ConnectRequestPacket(buffer);
                 Log(String.Format("Client{0} requested to join server", clientID, pkt.userName));
                 ConnectResponsePacket outPkt;
                 if (hostEngine.AddPlayer(clientID, pkt.userName, out CharacterType assignedCharacter))
                 {
-                    outPkt = new ConnectResponsePacket(true, clientID, assignedCharacter);
+                    outPkt = new ConnectResponsePacket(true, clientID, assignedCharacter, allPlayers);
+                    if (connectedPlayers.TryGetValue(clientID, out NetworkEndpoint endpoint))
+                    {
+                        endpoint.SendMessage(outPkt);
+                    }
+                    ConnectForwardPacket fwdPacket = new ConnectForwardPacket(pkt.userName, clientID, assignedCharacter);
+                    Broadcast(clientID, outPkt);
                 }
                 else
                 {
-                    outPkt = new ConnectResponsePacket(false, clientID, assignedCharacter);
+                    outPkt = new ConnectResponsePacket(false, clientID, assignedCharacter, allPlayers);
                 }
-                Broadcast(-1, outPkt);
+                
                 break;
             }
             case MessageIDs.Disconnect_ToServer :
@@ -169,8 +177,8 @@ public class ServerNetworkInterface : BaseNetworkInterface
                 Log(String.Format("Client{0} requested to change character to {1}", clientID, pkt.character.ToString()));
                 if (hostEngine.UpdateCharacter(clientID, pkt.character))
                 {
-                    CharUpdatePacket outPkt = new CharUpdatePacket(false, pkt.character);Broadcast(clientID, outPkt);
-                    Broadcast(-1, outPkt);
+                    CharUpdatePacket outPkt = new CharUpdatePacket(false, clientID, pkt.character);
+                    Broadcast(NetworkConstants.BROADCAST_ALL_CLIENTS, outPkt);
                     Log(String.Format("Changed {0} to {1}", clientID, pkt.character));
                 }
                 else
@@ -185,8 +193,8 @@ public class ServerNetworkInterface : BaseNetworkInterface
                 Log(String.Format("Client{0} requested to move to {1}", clientID, pkt.room.ToString()));
                 if (hostEngine.MovePlayer(clientID, pkt.room))
                 {
-                    MoveToRoomPacket outPkt = new MoveToRoomPacket(false, pkt.room);
-                    Broadcast(-1, outPkt);
+                    MoveToRoomPacket outPkt = new MoveToRoomPacket(false, clientID, pkt.room);
+                    Broadcast(NetworkConstants.BROADCAST_ALL_CLIENTS, outPkt);
                     Log(String.Format("Moved Client{0} to {1}", clientID, pkt.room.ToString()));
                 }
                 else
@@ -200,8 +208,8 @@ public class ServerNetworkInterface : BaseNetworkInterface
             {
                 GuessPacket pkt = new GuessPacket(buffer);
                 Log(String.Format("Client{0} guessed {1} used the {2} in the {3}", clientID, pkt.character.ToString(), pkt.weapon.ToString(), pkt.room.ToString()));
-                GuessPacket outPkt = new GuessPacket(false, pkt.isFinalGuess, pkt.character, pkt.weapon, pkt.room);
-                Broadcast(clientID, outPkt);
+                GuessPacket outPkt = new GuessPacket(false, clientID, pkt.isFinalGuess, pkt.character, pkt.weapon, pkt.room);
+                Broadcast(NetworkConstants.BROADCAST_ALL_CLIENTS, outPkt);
                 break;
             }
             case MessageIDs.Reveal_ToServer :

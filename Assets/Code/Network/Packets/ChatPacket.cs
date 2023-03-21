@@ -23,12 +23,12 @@ public struct ChatPacket : INetworkPacket
         idx += sizeof(Int32);
         senderID = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(buffer, idx));
         idx += sizeof(Int32);
-        message = Encoding.ASCII.GetString(buffer, idx, NetworkConstants.MAX_CHAT_MSG_LEN);
+        message = Encoding.ASCII.GetString(buffer, idx, NetworkConstants.MAX_CHAT_MSG_LEN).TrimEnd((Char)0);
         message = message.TrimEnd((Char)0);
     }
     public byte[] GetBytes()
     {
-        byte[] buffer = new byte[sizeof(Int32) + sizeof(Int32) + NetworkConstants.MAX_CHAT_MSG_LEN * sizeof(Char)];
+        byte[] buffer = new byte[sizeof(Int32) + sizeof(Int32) + sizeof(Int32) + NetworkConstants.MAX_CHAT_MSG_LEN * sizeof(Char)];
         int idx = 0;
 
         byte[] tempBytes;

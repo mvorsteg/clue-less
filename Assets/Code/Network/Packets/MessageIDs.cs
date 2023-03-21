@@ -20,6 +20,7 @@ public enum MessageIDs
     #region Server to Client
 
     Connect_ToClient,                   // sent to 1 client when adding them to server
+    ConnectForward_ToClient,            // sent to all other clients when a new player joins
     Disconnect_ToClient,                // sent to 1 client if forcibly removed from server
     ClientDrop_ToClient,                // sent to all clients when a client leaves the server
     Chat_ToClient,                      // sent to all clients when a player sends a chat message
