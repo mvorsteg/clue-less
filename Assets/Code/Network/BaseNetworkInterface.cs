@@ -14,7 +14,7 @@ public abstract class BaseNetworkInterface
     protected NetworkStream networkStream; 
     protected bool isConnected;
     public string processName;
-    public ClientConsole console; // temp, this is really bad coupling
+    public ConsoleLogger logger;
 
     public BaseNetworkInterface(IPAddress ipAddress, int portNum)
     {   
@@ -22,9 +22,9 @@ public abstract class BaseNetworkInterface
         this.portNum = portNum;
     }
 
-    public virtual void Initialize()
+    public virtual void Initialize(BaseEngine engine, ConsoleLogger logger)
     {
-        // do nothing in base class
+        this.logger = logger;
     }
 
     public virtual void ShutDown()
@@ -41,10 +41,10 @@ public abstract class BaseNetworkInterface
     // utility for Debug.Log so I don't have to append [Client] or [Server] to every message to see where it came from
     public void Log(string message)
     {
-        Debug.Log(String.Format("[{0}] {1}", processName, message));
-        if (console != null)
+        //Debug.Log(String.Format("[{0}] {1}", processName, message));
+        if (logger != null)
         {
-            console.QueueMessageForDisplay(message);
+            logger.Log(message, SubsystemType.Network);
         }
         //Thread.Sleep(500);
         // BaseNetworkInterface.Log(message);

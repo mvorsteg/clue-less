@@ -19,8 +19,10 @@ public class ClientNetworkInterface : BaseNetworkInterface
         guestEngine = GameObject.FindAnyObjectByType<GuestEngine>();  // temp, not how we're keeping this
     }
 
-    public override void Initialize()
+    public override void Initialize(BaseEngine engine, ConsoleLogger logger)
     {
+        base.Initialize(engine, logger);
+        guestEngine = (GuestEngine)engine;
         // create a new thread to handle network client
         Thread connectThread = new Thread(ConnectToServer);
         connectThread.Start();
@@ -84,7 +86,6 @@ public class ClientNetworkInterface : BaseNetworkInterface
                     {
                         guestEngine.AssignFromServer(pkt.assignedId, pkt.assignedCharacter);
                         netPlayer.id = pkt.assignedId;
-                        Log(String.Format("Joined server as {0} (Assigned ID is {1})", pkt.assignedCharacter, pkt.assignedId));
 
                         // record all other players
                         foreach (Tuple<int, string, CharacterType> playerInfo in pkt.otherPlayers)
@@ -92,11 +93,8 @@ public class ClientNetworkInterface : BaseNetworkInterface
                             if (playerInfo.Item1 >= 0)
                             {
                                 guestEngine.AddPlayer(playerInfo.Item1, playerInfo.Item2, playerInfo.Item3);
-                                Log(String.Format("{0} is playing as {1} (Assigned ID is {2})", playerInfo.Item2, playerInfo.Item3.ToString(), playerInfo.Item1));
                             }
                         }
-                        // temp
-                        console.id = pkt.assignedId;
                     }
                     else
                     {
@@ -109,7 +107,6 @@ public class ClientNetworkInterface : BaseNetworkInterface
             {
                 ConnectForwardPacket pkt = new ConnectForwardPacket(buffer);
                 guestEngine.AddPlayer(pkt.assignedId, pkt.userName, pkt.assignedCharacter);
-                Log(String.Format("{0} Joined server as {1} (Assigned ID is {2})", pkt.userName, pkt.assignedCharacter, pkt.assignedId));
                 break;
             }
             case MessageIDs.Disconnect_ToClient :
@@ -130,40 +127,19 @@ public class ClientNetworkInterface : BaseNetworkInterface
             case MessageIDs.CharUpdate_ToClient :
             {
                 CharUpdatePacket pkt = new CharUpdatePacket(buffer);
-                if (pkt.userID == clientID)
-                {
-                    Log(String.Format("Changed character to {0}", pkt.character.ToString()));
-                }
-                else
-                {
-                    Log(String.Format("{0} changed character to {1}", guestEngine.GetPlayerName(pkt.userID), pkt.character.ToString()));
-                }
+                guestEngine.UpdateCharacter(pkt.userID, pkt.character);
                 break;
             }
             case MessageIDs.MoveToRoom_ToClient :
             {
                 MoveToRoomPacket pkt = new MoveToRoomPacket(buffer);
-                if (pkt.userID == clientID)
-                {
-                    Log(String.Format("Moved to {0}", clientID, pkt.room.ToString()));
-                }
-                else
-                {
-                    Log(String.Format("{0} requested to move to {1}", guestEngine.GetPlayerName(pkt.userID), pkt.room.ToString()));
-                }
+                guestEngine.MovePlayer(pkt.userID, pkt.room);
                 break;
             }
             case MessageIDs.Guess_ToClient :
             {
                 GuessPacket pkt = new GuessPacket(buffer);
-                if (pkt.userID == clientID)
-                {
-                    Log(String.Format("Guessed {0} used the {1} in the {2}", pkt.character.ToString(), pkt.weapon.ToString(), pkt.room.ToString()));
-                }
-                else
-                {
-                    Log(String.Format("{0} guessed {1} used the {2} in the {3}", guestEngine.GetPlayerName(pkt.userID), pkt.character.ToString(), pkt.weapon.ToString(), pkt.room.ToString()));
-                }
+                guestEngine.Guess(pkt.userID, pkt.isFinalGuess, pkt.character, pkt.weapon, pkt.room);
                 break;
             }
             case MessageIDs.Reveal_ToClient :

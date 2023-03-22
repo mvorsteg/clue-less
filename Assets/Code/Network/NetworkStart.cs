@@ -11,7 +11,10 @@ public class NetworkStart : MonoBehaviour
 
     public InputField ipField;
     public InputField portField;
+    public ConsoleLogger clientLogger, serverLogger;
     public ClientConsole clientConsole, serverConsole;
+    public GuestEngine guestEngine;
+    public HostEngine hostEngine;
 
     public BaseNetworkInterface netIFace;
 
@@ -45,9 +48,8 @@ public class NetworkStart : MonoBehaviour
         if (isServer)
         {
             ServerNetworkInterface server = new ServerNetworkInterface(address, port, 6);
-            server.Initialize();
-            server.console = serverConsole;
-            server.console.netInterface = server;
+            server.Initialize(hostEngine, serverLogger);
+            clientConsole.netInterface = server;
             server.processName = "Host Server";
             server.Log("Starting with \"Server\" argument");
 
@@ -57,9 +59,13 @@ public class NetworkStart : MonoBehaviour
             // also create client that will listen on loopback
             ClientNetworkInterface client = new ClientNetworkInterface(IPAddress.Loopback, port);
             //client.Initialize();
-            client.console = clientConsole;
-            client.console.netInterface = client;
+            client.logger = clientLogger;
             client.processName = "Host Client";
+
+            clientConsole.netInterface = client;
+            clientConsole.engine = guestEngine;
+
+            guestEngine.logger = clientLogger;
 
             netIFace = client;
             isInitialzied = true;
@@ -68,10 +74,14 @@ public class NetworkStart : MonoBehaviour
         {
             ClientNetworkInterface client = new ClientNetworkInterface(address, port);
             //client.Initialize();
-            client.console = clientConsole;
-            client.console.netInterface = client;
+            client.logger = clientLogger;
             client.processName = processName;
             client.Log("Starting with \"Client\" argument");
+
+            clientConsole.netInterface = client;
+            clientConsole.engine = guestEngine;
+
+            guestEngine.logger = clientLogger;
 
             netIFace = client;
             isInitialzied = true;

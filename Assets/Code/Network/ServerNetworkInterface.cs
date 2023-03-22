@@ -26,8 +26,10 @@ public class ServerNetworkInterface : BaseNetworkInterface
         }
     }
 
-    public override void Initialize()
+    public override void Initialize(BaseEngine engine, ConsoleLogger logger)
     {
+        base.Initialize(engine, logger);
+        hostEngine = (HostEngine)engine;
         // listen for incoming connections on new thread
         tcpListener = new TcpListener(IPAddress.Any, portNum);
         tcpListener.Start();
@@ -150,7 +152,7 @@ public class ServerNetworkInterface : BaseNetworkInterface
                         endpoint.SendMessage(outPkt);
                     }
                     ConnectForwardPacket fwdPacket = new ConnectForwardPacket(pkt.userName, clientID, assignedCharacter);
-                    Broadcast(clientID, outPkt);
+                    Broadcast(clientID, fwdPacket);
                 }
                 else
                 {
@@ -179,11 +181,6 @@ public class ServerNetworkInterface : BaseNetworkInterface
                 {
                     CharUpdatePacket outPkt = new CharUpdatePacket(false, clientID, pkt.character);
                     Broadcast(NetworkConstants.BROADCAST_ALL_CLIENTS, outPkt);
-                    Log(String.Format("Changed {0} to {1}", clientID, pkt.character));
-                }
-                else
-                {
-                    Log(String.Format("Cannot change {0} to {1}", clientID, pkt.character));
                 }
                 break;
             }
@@ -195,11 +192,6 @@ public class ServerNetworkInterface : BaseNetworkInterface
                 {
                     MoveToRoomPacket outPkt = new MoveToRoomPacket(false, clientID, pkt.room);
                     Broadcast(NetworkConstants.BROADCAST_ALL_CLIENTS, outPkt);
-                    Log(String.Format("Moved Client{0} to {1}", clientID, pkt.room.ToString()));
-                }
-                else
-                {
-                    Log(String.Format("Illegal move"));
                 }
                 
                 break;

@@ -10,18 +10,10 @@ public class ClientConsole : MonoBehaviour
 {
     public InputField inputField;
     public BaseNetworkInterface netInterface;
-    public GameObject newCommandPrefab;
-    public Transform consoleParent;
-    private Queue<string> messageQueue = new Queue<string>();
-    public int id = -1;
+    
+    public GuestEngine engine;
+    public ConsoleLogger logger;
 
-    private void Update()
-    {
-        if (messageQueue.Count > 0)
-        {
-            LogMessageToVirtualConsole(messageQueue.Dequeue());
-        }
-    }
 
     public void SubmitCommand()
     {
@@ -37,7 +29,7 @@ public class ClientConsole : MonoBehaviour
                 {
                     string nameStr = tokens[1];
                     netInterface.processName = nameStr;
-                    netInterface.Initialize();
+                    netInterface.Initialize(engine, logger);
                     break;
                 }
                 case ("char"):
@@ -45,7 +37,7 @@ public class ClientConsole : MonoBehaviour
                     string charStr = tokens[1];
                     if (Enum.TryParse<CharacterType>(charStr, true, out CharacterType charEnum))
                     {
-                        CharUpdatePacket pkt = new CharUpdatePacket(true, id, charEnum);
+                        CharUpdatePacket pkt = new CharUpdatePacket(true, engine.ID, charEnum);
                         clientInterface.SendMessage(pkt);
                     }
                     break;
@@ -53,8 +45,8 @@ public class ClientConsole : MonoBehaviour
                 case ("chat"):
                 {
                     string text = string.Join(" ", tokens.Skip(1).ToList<string>());
-                    QueueMessageForDisplay(text);
-                    ChatPacket pkt = new ChatPacket(true, id, text);
+                    logger.Log(text, SubsystemType.UI);
+                    ChatPacket pkt = new ChatPacket(true, engine.ID, text);
                     clientInterface.SendMessage(pkt);
                     break;
                 }
@@ -63,7 +55,7 @@ public class ClientConsole : MonoBehaviour
                     string roomStr = tokens[1];
                     if (Enum.TryParse<RoomType>(roomStr, true, out RoomType roomEnum))
                     {
-                        MoveToRoomPacket pkt = new MoveToRoomPacket(true, id, roomEnum);
+                        MoveToRoomPacket pkt = new MoveToRoomPacket(true, engine.ID, roomEnum);
                         clientInterface.SendMessage(pkt);
                     }
                     break;
@@ -77,7 +69,7 @@ public class ClientConsole : MonoBehaviour
                         Enum.TryParse<WeaponType>(weaponStr, true, out WeaponType weaponEnum) &&
                         Enum.TryParse<RoomType>(roomStr, true, out RoomType roomEnum))
                     {
-                        GuessPacket pkt = new GuessPacket(true, id, false, charEnum, weaponEnum, roomEnum);
+                        GuessPacket pkt = new GuessPacket(true, engine.ID, false, charEnum, weaponEnum, roomEnum);
                         clientInterface.SendMessage(pkt);
                     }
                     break;
@@ -91,9 +83,14 @@ public class ClientConsole : MonoBehaviour
                         Enum.TryParse<WeaponType>(weaponStr, true, out WeaponType weaponEnum) &&
                         Enum.TryParse<RoomType>(roomStr, true, out RoomType roomEnum))
                     {
-                        GuessPacket pkt = new GuessPacket(true, id, true, charEnum, weaponEnum, roomEnum);
+                        GuessPacket pkt = new GuessPacket(true, engine.ID, true, charEnum, weaponEnum, roomEnum);
                         clientInterface.SendMessage(pkt);
                     }
+                    break;
+                }
+                default:
+                {
+                    Log(String.Format("Unrecognized command {0}", tokens[0]));
                     break;
                 }
             }
@@ -101,14 +98,11 @@ public class ClientConsole : MonoBehaviour
         
     }
 
-    public void QueueMessageForDisplay(string message)
+    public void Log(string message)
     {
-        messageQueue.Enqueue(message);
-    }
-
-    public void LogMessageToVirtualConsole(string message)
-    {
-        Text newMessageText = Instantiate(newCommandPrefab, consoleParent).GetComponent<Text>();
-        newMessageText.text = message;
+        if (logger != null)
+        {
+            logger.Log(message, SubsystemType.UI);
+        }
     }
 }

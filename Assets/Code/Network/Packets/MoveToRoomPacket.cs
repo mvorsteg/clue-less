@@ -10,7 +10,7 @@ public struct MoveToRoomPacket : INetworkPacket
 
     public MoveToRoomPacket(bool isToServer, int userID, RoomType room)
     {
-        ID = isToServer ? MessageIDs.MoveToRoom_ToServer : MessageIDs.MoveToRoom_ToServer;
+        ID = isToServer ? MessageIDs.MoveToRoom_ToServer : MessageIDs.MoveToRoom_ToClient;
         this.userID = userID;
         this.room = room;
     }

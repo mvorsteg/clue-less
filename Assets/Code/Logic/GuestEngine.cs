@@ -2,40 +2,78 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GuestEngine : MonoBehaviour
+public class GuestEngine : BaseEngine
 {
     public PlayerState player;
-    public Dictionary<int, PlayerState> otherPlayers;
-    public Board board;
 
-    private void Awake()
-    {
-        otherPlayers = new Dictionary<int, PlayerState>();
-    }
+    public int ID { get => player.playerID; }
 
     public void AssignFromServer(int playerID, CharacterType assignedCharacter)
     {
         player = new PlayerState(playerID, "test name", assignedCharacter);
+        Log(String.Format("Joined server as {0} (Assigned ID is {1})", assignedCharacter, playerID));
     }
 
-    public bool AddPlayer(int playerID, string name, CharacterType assignedCharacter)
+    public override bool AddPlayer(int playerID, string name, CharacterType assignedCharacter)
     {
-        if (otherPlayers.TryAdd(playerID, new PlayerState(playerID, name, assignedCharacter)))
+        if (players.TryAdd(playerID, new PlayerState(playerID, name, assignedCharacter)))
         {
+            Log(String.Format("{0} Joined server as {1} (Assigned ID is {2})", name, assignedCharacter, playerID));
             return true;
         }
         
         // error adding player
-        Debug.Log(string.Format("Error adding player {0}", playerID));
+        Log(string.Format("Error adding player {0}", playerID));
         return false;
     }
 
-    public string GetPlayerName(int playerID)
+    public bool UpdateCharacter(int playerID, CharacterType newCharacter)
     {
-        if (otherPlayers.TryGetValue(playerID, out PlayerState player))
+        if (playerID == ID)
         {
-            return player.playerName;
+            player.character = newCharacter;
+            Log(String.Format("Changed character to {0}", newCharacter));
+            return true;
         }
-        return string.Empty;
+        else if (players.TryGetValue(playerID, out PlayerState otherPlayer))
+        {
+            otherPlayer.character = newCharacter;
+            Log(String.Format("{0} changed character to {1}", otherPlayer.playerName, newCharacter));
+            return true;
+        }
+        Log(String.Format("Error changing player {0} character to {1}", playerID, newCharacter));
+        return false;
+    }
+
+    public bool MovePlayer(int playerID, RoomType newRoom)
+    {
+        if (playerID == ID)
+        {
+            Log(String.Format("Moved to {0}", newRoom));
+            return true;
+        }
+        else if (players.TryGetValue(playerID, out PlayerState otherPlayer))
+        {
+            Log(String.Format("{0} moved to {1}", otherPlayer.playerName, newRoom));
+            return true;
+        }
+        Log(String.Format("Error moving player {0} to {1}", playerID, newRoom));
+        return false;
+    }
+
+    public bool Guess(int playerID, bool isFinal, CharacterType character, WeaponType weapon, RoomType room)
+    {
+        if (playerID == ID)
+        {
+            Log(String.Format("Guessed {0} used the {1} in the {2}", character, weapon, room));
+            return true;
+        }
+        else if (players.TryGetValue(playerID, out PlayerState otherPlayer))
+        {
+            Log(String.Format("{0} guessed {1} used the {2} in the {3}", GetPlayerName(playerID), character, weapon, room));
+            return true;
+        }
+        Log("Error with guess");
+        return false;
     }
 }

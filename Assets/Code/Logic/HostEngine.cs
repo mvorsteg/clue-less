@@ -3,16 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class HostEngine : MonoBehaviour
+public class HostEngine : BaseEngine
 {
-    public Dictionary<int, PlayerState> players;
-    public Board board;
-    
-    private void Awake()
-    {
-        players = new Dictionary<int, PlayerState>();
-    }
-
     public bool AddPlayer(int playerID, string name, out CharacterType assignedCharacter)
     {
         // find available character to assign
@@ -33,6 +25,7 @@ public class HostEngine : MonoBehaviour
                 PlayerState newPlayer = new PlayerState(playerID, name, assignedCharacter);
                 if (players.TryAdd(playerID, newPlayer))
                 {
+                    Log(string.Format("Adding player {0} to session", playerID));
                     return true;
                 }
                 break;
@@ -40,7 +33,7 @@ public class HostEngine : MonoBehaviour
         }
         
         // error adding player
-        Debug.Log(string.Format("Error adding player {0}", playerID));
+        Log(string.Format("Error adding player {0}", playerID));
         assignedCharacter = CharacterType.Mustard;  // value does not matter at all if we fail. I just like col. Mustard the best
         return false;
     }
@@ -64,10 +57,12 @@ public class HostEngine : MonoBehaviour
         {
             if (player != null && player.character == newCharacter)
             {
+                Log(String.Format("Cannot change {0} to {1}", playerID, newCharacter));
                 return false;
             }
         }
         players[playerID].character = newCharacter;
+        Log(String.Format("Changed {0} to {1}", playerID, newCharacter));
         return true;
     }
 
@@ -79,10 +74,11 @@ public class HostEngine : MonoBehaviour
             {
                 // do move
                 playerState.currentRoom = destRoom;
+                Log(String.Format("Moved Client{0} to {1}", playerID, destRoom.ToString()));
                 return true;
             }
         }
+        Log("Illegal move");
         return false;
     }
-
 }

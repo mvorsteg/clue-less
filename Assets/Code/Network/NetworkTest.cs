@@ -21,7 +21,7 @@ public class NetworkTest
         if (isServer)
         {
             ServerNetworkInterface server = new ServerNetworkInterface(IPAddress.Any, 50003, 6);
-            server.Initialize();
+            //server.Initialize();
             server.Log("Starting with \"Server\" argument parsed from command line");
             
             while ((Console.ReadLine()) != "quit")
@@ -33,7 +33,7 @@ public class NetworkTest
         else
         {
             ClientNetworkInterface client = new ClientNetworkInterface(IPAddress.Loopback, 50003);
-            client.Initialize();
+            //client.Initialize();
             client.Log("Starting with \"Client\" argument parsed from command line");
 
             string msg;
