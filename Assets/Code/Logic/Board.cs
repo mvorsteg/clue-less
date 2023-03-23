@@ -13,13 +13,13 @@ public class Board : MonoBehaviour
         {
             { RoomType.Study, RoomType.Hall, RoomType.Lounge },
             { RoomType.Library, RoomType.BilliardRoom, RoomType.DiningRoom },
-            { RoomType.BilliardRoom, RoomType.Ballroom, RoomType.Kitchen} 
+            { RoomType.Conservatory, RoomType.Ballroom, RoomType.Kitchen} 
         };
         secretPassages = new Dictionary<RoomType, RoomType> 
         {
             { RoomType.Study, RoomType.Kitchen },
-            { RoomType.Lounge, RoomType.BilliardRoom },
-            { RoomType.BilliardRoom, RoomType.Lounge },
+            { RoomType.Lounge, RoomType.Conservatory },
+            { RoomType.Conservatory, RoomType.Lounge },
             { RoomType.Kitchen, RoomType.Study }
         };
     }
@@ -45,7 +45,7 @@ public class Board : MonoBehaviour
         {
             return true;
         }
-        if (row < rooms.GetLength(0) && rooms[row + 1, col] == destRoom)
+        if (row < rooms.GetLength(0) - 1 && rooms[row + 1, col] == destRoom)
         {
             return true;
         }
@@ -53,7 +53,7 @@ public class Board : MonoBehaviour
         {
             return true;
         }
-        if (col < rooms.GetLength(1) && rooms[row, col + 1] == destRoom)
+        if (col < rooms.GetLength(1) - 1 && rooms[row, col + 1] == destRoom)
         {
             return true;
         }

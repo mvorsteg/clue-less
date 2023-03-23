@@ -6,6 +6,10 @@
 /[Tt]emp/
 /[Oo]bj/
 /[Bb]uild/
+/[Bb]uildWin/
+/[Bb]uildMac/
+/[Bb]uildMac.app/
+/[Bb]uildWeb/
 /[Bb]uilds/
 /[Ll]ogs/
 /[Mm]emoryCaptures/

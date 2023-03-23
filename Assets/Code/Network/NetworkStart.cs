@@ -41,7 +41,7 @@ public class NetworkStart : MonoBehaviour
             Debug.Log(String.Format("failed to parse port {0}", portField.text));
             return;
         }
-        Initialize(true, false, IPAddress.Any, port, nameField.text);
+        Initialize(true, false, IPAddress.Any, port, "");
     }
 
     public void JoinServer()
@@ -72,8 +72,13 @@ public class NetworkStart : MonoBehaviour
         if (isServer)
         {
             ServerNetworkInterface server = new ServerNetworkInterface(address, port, 6);
+            
+            server.logger = serverLogger;
+            serverConsole.netInterface = server;
+            
+            hostEngine.logger = serverLogger;
+
             server.Initialize(hostEngine, serverLogger, "Server");
-            clientConsole.netInterface = server;
             server.Log("Starting with \"Server\" argument");
 
             netIFace = server;
