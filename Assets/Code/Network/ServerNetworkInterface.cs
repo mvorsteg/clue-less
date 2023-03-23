@@ -26,10 +26,11 @@ public class ServerNetworkInterface : BaseNetworkInterface
         }
     }
 
-    public override void Initialize(BaseEngine engine, ConsoleLogger logger)
+    public override void Initialize(BaseEngine engine, ConsoleLogger logger, string processName)
     {
-        base.Initialize(engine, logger);
+        base.Initialize(engine, logger, processName);
         hostEngine = (HostEngine)engine;
+        
         // listen for incoming connections on new thread
         tcpListener = new TcpListener(IPAddress.Any, portNum);
         tcpListener.Start();

@@ -22,9 +22,10 @@ public abstract class BaseNetworkInterface
         this.portNum = portNum;
     }
 
-    public virtual void Initialize(BaseEngine engine, ConsoleLogger logger)
+    public virtual void Initialize(BaseEngine engine, ConsoleLogger logger, string processName)
     {
         this.logger = logger;
+        this.processName = processName;
     }
 
     public virtual void ShutDown()

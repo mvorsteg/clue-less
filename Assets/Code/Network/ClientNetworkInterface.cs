@@ -19,9 +19,9 @@ public class ClientNetworkInterface : BaseNetworkInterface
         guestEngine = GameObject.FindAnyObjectByType<GuestEngine>();  // temp, not how we're keeping this
     }
 
-    public override void Initialize(BaseEngine engine, ConsoleLogger logger)
+    public override void Initialize(BaseEngine engine, ConsoleLogger logger, string processName)
     {
-        base.Initialize(engine, logger);
+        base.Initialize(engine, logger, processName);
         guestEngine = (GuestEngine)engine;
         // create a new thread to handle network client
         Thread connectThread = new Thread(ConnectToServer);

@@ -25,13 +25,13 @@ public class ClientConsole : MonoBehaviour
             ClientNetworkInterface clientInterface = (ClientNetworkInterface)netInterface;
             switch (cmdType.ToLower())
             {
-                case ("connect"):
-                {
-                    string nameStr = tokens[1];
-                    netInterface.processName = nameStr;
-                    netInterface.Initialize(engine, logger);
-                    break;
-                }
+                // case ("connect"):
+                // {
+                //     string nameStr = tokens[1];
+                //     netInterface.processName = nameStr;
+                //     netInterface.Initialize(engine, logger);
+                //     break;
+                // }
                 case ("char"):
                 {
                     string charStr = tokens[1];
@@ -95,7 +95,7 @@ public class ClientConsole : MonoBehaviour
                 }
             }
         }
-        
+        inputField.text = "";
     }
 
     public void Log(string message)
