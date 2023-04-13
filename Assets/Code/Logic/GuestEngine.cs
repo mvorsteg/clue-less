@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GuestEngine : BaseEngine
@@ -64,6 +65,7 @@ public class GuestEngine : BaseEngine
     public bool AssignClueCards(List<CharacterType> characterClues, List<WeaponType> weaponClues, List<RoomType> roomClues)
     {
         player.cards = deck.GetCardsFromClues(characterClues, weaponClues, roomClues);
+        Log(String.Format("{0}'s cards are {1}", player.playerName, String.Join(", ", player.cards.Select(x => x.cardName))));
         return true;
     }
 

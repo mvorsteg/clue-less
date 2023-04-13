@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Revolver
   m_EditorClassIdentifier: 
   type: 0
-  name: Revolver
+  cardName: Revolver

@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Mustard
   m_EditorClassIdentifier: 
   type: 1
-  name: Col. Mustard
+  cardName: Col. Mustard

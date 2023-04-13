@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Ballroom
   m_EditorClassIdentifier: 
   type: 2
-  name: Ballroom
+  cardName: Ballroom

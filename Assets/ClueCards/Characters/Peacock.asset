@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Peacock
   m_EditorClassIdentifier: 
   type: 1
-  name: Mrs. Peacock
+  cardName: Mrs. Peacock

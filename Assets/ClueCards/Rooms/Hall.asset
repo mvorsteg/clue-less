@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Hall
   m_EditorClassIdentifier: 
   type: 2
-  name: Hall
+  cardName: Hall

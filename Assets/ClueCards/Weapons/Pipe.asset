@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Pipe
   m_EditorClassIdentifier: 
   type: 0
-  name: Pipe
+  cardName: Pipe

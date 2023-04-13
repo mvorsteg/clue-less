@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Wrench
   m_EditorClassIdentifier: 
   type: 0
-  name: Wrench
+  cardName: Wrench

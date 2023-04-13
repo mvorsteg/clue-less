@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Lounge
   m_EditorClassIdentifier: 
   type: 2
-  name: Lounge
+  cardName: Lounge

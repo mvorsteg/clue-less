@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: BilliardRoom
   m_EditorClassIdentifier: 
   type: 2
-  name: Billiard Room
+  cardName: Billiard Room

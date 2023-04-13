@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: DiningRoom
   m_EditorClassIdentifier: 
   type: 2
-  name: Dining Room
+  cardName: Dining Room

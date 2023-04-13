@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Knife
   m_EditorClassIdentifier: 
   type: 0
-  name: Knife
+  cardName: Knife

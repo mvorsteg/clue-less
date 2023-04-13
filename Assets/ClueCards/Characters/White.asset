@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: White
   m_EditorClassIdentifier: 
   type: 1
-  name: Mrs. White
+  cardName: Mrs. White

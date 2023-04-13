@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Study
   m_EditorClassIdentifier: 
   type: 2
-  name: Study
+  cardName: Study

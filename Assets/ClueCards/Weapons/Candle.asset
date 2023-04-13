@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Candle
   m_EditorClassIdentifier: 
   type: 0
-  name: Candlestick
+  cardName: Candle

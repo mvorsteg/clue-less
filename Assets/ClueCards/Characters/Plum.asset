@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Plum
   m_EditorClassIdentifier: 
   type: 1
-  name: Prof. Plum
+  cardName: Prof. Plum

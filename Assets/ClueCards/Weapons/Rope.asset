@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Rope
   m_EditorClassIdentifier: 
   type: 0
-  name: Rope
+  cardName: Rope

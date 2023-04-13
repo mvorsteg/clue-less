@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Conservatory
   m_EditorClassIdentifier: 
   type: 2
-  name: Conservatory
+  cardName: Conservatory
