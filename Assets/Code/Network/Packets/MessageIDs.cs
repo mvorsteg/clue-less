@@ -8,6 +8,7 @@ public enum MessageIDs
     Connect_ToServer,                   // sent to server when player wants to connect
     Disconnect_ToServer,                // sent to server when player is leaving
     Chat_ToServer,                      // sent to server when player sends a chat message
+    GameStart_ToServer,                 // sent to server when player is ready to start the game
     CharUpdate_ToServer,                // sent to server when player changes character/color
     MoveToRoom_ToServer,                // sent to server when player moves to a new room
     Guess_ToServer,                     // sent to server when player makes a guess

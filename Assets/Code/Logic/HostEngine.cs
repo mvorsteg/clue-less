@@ -5,6 +5,28 @@ using UnityEngine;
 
 public class HostEngine : BaseEngine
 {
+    public ServerNetworkInterface netInterface;
+    public override bool StartGame()
+    {
+        base.StartGame();
+        // send cards to players
+        int cardsPerPlayer = Mathf.CeilToInt((float)(deck.TotalCards - 3) / (float)players.Keys.Count);
+        foreach (PlayerState player in players.Values)
+        {
+            player.cards = deck.GetCards(cardsPerPlayer);
+
+            RoomType initialRoom = board.GetStartingRoom(player.character);
+            MoveToRoomPacket roomPkt = new MoveToRoomPacket(false, player.playerID, initialRoom);
+            netInterface.Broadcast(NetworkConstants.SERVER_ID, roomPkt);
+            if (CardDeck.GetCluesFromCards(player.cards, out List<CharacterType> characters, out List<WeaponType> weapons, out List<RoomType> rooms))
+            {
+                GameStartPacket gamePkt = new GameStartPacket(false, player.playerID, characters, weapons, rooms);
+                netInterface.SendMessage(player.playerID, gamePkt);
+            }
+        }
+
+        return true;        
+    }
     public bool AddPlayer(int playerID, string name, out CharacterType assignedCharacter)
     {
         // find available character to assign

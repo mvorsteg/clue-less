@@ -12,6 +12,8 @@ public class NetworkStart : MonoBehaviour
     public InputField nameField, ipField, portField;
     public ConsoleLogger clientLogger, serverLogger;
     public ClientConsole clientConsole, serverConsole;
+    public ClientNetworkInterface clientNet;
+    public ServerNetworkInterface serverNet;
     public GuestEngine guestEngine;
     public HostEngine hostEngine;
 
@@ -71,52 +73,47 @@ public class NetworkStart : MonoBehaviour
     {
         if (isServer)
         {
-            ServerNetworkInterface server = new ServerNetworkInterface(address, port, 6);
-            
-            server.logger = serverLogger;
-            serverConsole.netInterface = server;
+            serverConsole.netInterface = serverNet;
             
             hostEngine.logger = serverLogger;
 
-            server.Initialize(hostEngine, serverLogger, "Server");
-            server.Log("Starting with \"Server\" argument");
+            serverNet.Initialize(address, port, hostEngine, serverLogger, "Server");
+            serverNet.Log("Starting with \"Server\" argument");
 
-            netIFace = server;
+            netIFace = serverNet;
             isInitialzied = true;
             
             if (isClient)
             {
                 // also create client that will listen on loopback
-                ClientNetworkInterface client = new ClientNetworkInterface(IPAddress.Loopback, port);
                 //client.Initialize();
-                client.logger = clientLogger;
+                clientNet.logger = clientLogger;
 
-                clientConsole.netInterface = client;
+                clientConsole.netInterface = clientNet;
                 clientConsole.engine = guestEngine;
 
                 guestEngine.logger = clientLogger;
 
-                client.Initialize(guestEngine, clientLogger, playerName);
+                clientNet.Initialize(IPAddress.Loopback, port, guestEngine, clientLogger, playerName);
 
-                netIFace = client;
+                netIFace = clientNet;
             }
             isInitialzied = true;
         }
         else
         {
-            ClientNetworkInterface client = new ClientNetworkInterface(address, port);
             //client.Initialize();
-            client.logger = clientLogger;
-            client.Log("Starting with \"Client\" argument");
+            clientNet.logger = clientLogger;
+            clientNet.Log("Starting with \"Client\" argument");
 
-            clientConsole.netInterface = client;
+            clientConsole.netInterface = clientNet;
             clientConsole.engine = guestEngine;
 
             guestEngine.logger = clientLogger;
 
-            client.Initialize(guestEngine, clientLogger, playerName);
+            clientNet.Initialize(address, port, guestEngine, clientLogger, playerName);
 
-            netIFace = client;
+            netIFace = clientNet;
             isInitialzied = true;
         }
     }

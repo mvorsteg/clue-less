@@ -6,6 +6,7 @@ public class Board : MonoBehaviour
 {
     public RoomType[,] rooms;
     public Dictionary<RoomType, RoomType> secretPassages;
+    public Dictionary<CharacterType, RoomType> startingRooms;
 
     private void Awake()
     {
@@ -22,6 +23,22 @@ public class Board : MonoBehaviour
             { RoomType.Conservatory, RoomType.Lounge },
             { RoomType.Kitchen, RoomType.Study }
         };
+
+        startingRooms = new Dictionary<CharacterType, RoomType>
+        {
+
+        };
+    }
+
+    public RoomType GetStartingRoom(CharacterType character)
+    {
+        if (startingRooms.TryGetValue(character, out RoomType room))
+        {
+            return room;
+        }
+        // error!
+        Debug.Log(String.Format("Undefined starting room for {0}", character));
+        return RoomType.Study;
     }
 
     public bool IsValidMove(RoomType startRoom, RoomType destRoom)

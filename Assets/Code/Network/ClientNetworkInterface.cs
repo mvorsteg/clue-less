@@ -12,17 +12,17 @@ public class ClientNetworkInterface : BaseNetworkInterface
     private NetworkEndpoint netPlayer;
     private GuestEngine guestEngine;
 
-    public ClientNetworkInterface(IPAddress ipAddress, int portNum) : base (ipAddress, portNum)
+    protected override void Awake()
     {
-        tcpClient = new TcpClient();
-        isConnected = true;
-        guestEngine = GameObject.FindAnyObjectByType<GuestEngine>();  // temp, not how we're keeping this
-    }
+        base.Awake();
+        tcpClient = new TcpClient();   
+    }    
 
-    public override void Initialize(BaseEngine engine, ConsoleLogger logger, string processName)
+    public override void Initialize(IPAddress ipAddress, int portNum, BaseEngine engine, ConsoleLogger logger, string processName)
     {
-        base.Initialize(engine, logger, processName);
+        base.Initialize(ipAddress, portNum, engine, logger, processName);
         guestEngine = (GuestEngine)engine;
+        isConnected = true;
         // create a new thread to handle network client
         Thread connectThread = new Thread(ConnectToServer);
         connectThread.Start();
@@ -52,7 +52,7 @@ public class ClientNetworkInterface : BaseNetworkInterface
         }
         catch (Exception e)
         {
-            Log(String.Format("Unexpected error: {2}\n{2}\n{3}", e.Message, e.InnerException, e.StackTrace));
+            Log(String.Format("Unexpected error: {0}\n{1}\n{2}", e.Message, e.InnerException, e.StackTrace));
         }
 
         // send initial connect message so server knows our name
@@ -62,7 +62,7 @@ public class ClientNetworkInterface : BaseNetworkInterface
         // begin processing messages from server 
         if (tcpClient.Connected && isConnected)
         {
-            netPlayer.GetMessage();
+            netPlayer.ContinuouslyGetMessages();
         }
     }
 
@@ -112,6 +112,16 @@ public class ClientNetworkInterface : BaseNetworkInterface
             case MessageIDs.Disconnect_ToClient :
 
                 break;
+            case MessageIDs.GameStart_ToClient :
+            {
+                GameStartPacket pkt = new GameStartPacket(buffer);
+                // if for us, take cards
+                if (pkt.userID == netPlayer.id)
+                {
+                    guestEngine.AssignClueCards(pkt.characterClues, pkt.weaponClues, pkt.roomClues);
+                }
+                break;
+            }
             case MessageIDs.Chat_ToClient :
             {
                 ChatPacket pkt = new ChatPacket(buffer);
@@ -121,9 +131,6 @@ public class ClientNetworkInterface : BaseNetworkInterface
                 }
                 break;
             }
-            case MessageIDs.GameStart_ToClient :
-
-                break;
             case MessageIDs.CharUpdate_ToClient :
             {
                 CharUpdatePacket pkt = new CharUpdatePacket(buffer);

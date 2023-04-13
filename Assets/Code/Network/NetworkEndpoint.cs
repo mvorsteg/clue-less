@@ -40,7 +40,7 @@ public class NetworkEndpoint
         networkStream.Write(buffer);
     }
 
-    public virtual void GetMessage()
+    public virtual void ContinuouslyGetMessages()
     {
         //netInterface.Log(String.Format("Getting messages"));
         while (tcpClient.Connected)
@@ -84,7 +84,7 @@ public class NetworkEndpoint
                     if (tcpClient.Connected)
                     {
                         MessageIDs messageId = (MessageIDs)IPAddress.NetworkToHostOrder(BitConverter.ToInt32(messageBuff, 0));
-                        netInterface.ProcessMessage(id, messageId, messageBuff);
+                        netInterface.EnqueueMessage(id, messageId, messageBuff);
                     }
                 }
                 else

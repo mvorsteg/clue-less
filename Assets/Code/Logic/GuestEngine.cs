@@ -61,6 +61,12 @@ public class GuestEngine : BaseEngine
         return false;
     }
 
+    public bool AssignClueCards(List<CharacterType> characterClues, List<WeaponType> weaponClues, List<RoomType> roomClues)
+    {
+        player.cards = deck.GetCardsFromClues(characterClues, weaponClues, roomClues);
+        return true;
+    }
+
     public bool Guess(int playerID, bool isFinal, CharacterType character, WeaponType weapon, RoomType room)
     {
         if (playerID == ID)

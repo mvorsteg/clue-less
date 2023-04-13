@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using UnityEngine;
 
-public abstract class BaseNetworkInterface
+public class BaseNetworkInterface : MonoBehaviour
 {
     protected IPAddress ipAddress;
     protected int portNum;
@@ -15,15 +15,25 @@ public abstract class BaseNetworkInterface
     protected bool isConnected;
     public string processName;
     public ConsoleLogger logger;
+    protected Queue<Tuple<int, MessageIDs, byte[]>> messageQueue;
 
-    public BaseNetworkInterface(IPAddress ipAddress, int portNum)
-    {   
-        this.ipAddress = ipAddress;
-        this.portNum = portNum;
+    protected virtual void Awake()
+    {
+        messageQueue = new Queue<Tuple<int, MessageIDs, byte[]>>();
     }
 
-    public virtual void Initialize(BaseEngine engine, ConsoleLogger logger, string processName)
+    protected virtual void Update()
     {
+        if (messageQueue.TryDequeue(out Tuple<int, MessageIDs, byte[]> messageData))
+        {
+            ProcessMessage(messageData.Item1, messageData.Item2, messageData.Item3);
+        }
+    }
+
+    public virtual void Initialize(IPAddress ipAddress, int portNum, BaseEngine engine, ConsoleLogger logger, string processName)
+    {
+        this.ipAddress = ipAddress;
+        this.portNum = portNum;
         this.logger = logger;
         this.processName = processName;
     }
@@ -32,6 +42,11 @@ public abstract class BaseNetworkInterface
     {
         networkStream.Dispose();
         isConnected = false;
+    }
+
+    public void EnqueueMessage(int playerID, MessageIDs messageID, byte[] buffer)
+    {
+        messageQueue.Enqueue(new Tuple<int, MessageIDs, byte[]>(playerID, messageID, buffer));
     }
 
     public virtual void ProcessMessage(int clientID, MessageIDs messageID, byte[] buffer)

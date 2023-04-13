@@ -1,8 +1,36 @@
+using System;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "ClueCard", menuName = "")]
 public class ClueCard : ScriptableObject
 {
     public ClueType type;
-    public new string name;
+    public string cardName;
+
+    public bool TryGetCharacterType(out CharacterType character)
+    {
+        if (Enum.TryParse<CharacterType>(name, out character))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public bool TryGetWeaponType(out WeaponType weapon)
+    {
+        if (Enum.TryParse<WeaponType>(name, out weapon))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public bool TryGetRoomType(out RoomType room)
+    {
+        if (Enum.TryParse<RoomType>(name, out room))
+        {
+            return true;
+        }
+        return false;
+    }
 }

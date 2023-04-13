@@ -32,6 +32,12 @@ public class ClientConsole : MonoBehaviour
                 //     netInterface.Initialize(engine, logger);
                 //     break;
                 // }
+                case ("start"):
+                {
+                    GameStartPacket pkt = new GameStartPacket(true, engine.ID);
+                    clientInterface.SendMessage(pkt);
+                    break;
+                }
                 case ("char"):
                 {
                     string charStr = tokens[1];

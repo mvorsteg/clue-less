@@ -9,15 +9,14 @@ using UnityEngine;
 
 public class ServerNetworkInterface : BaseNetworkInterface
 {
-    private int maxPlayers;
+    public int maxPlayers;
     private TcpListener tcpListener;
     private ConcurrentDictionary<int, NetworkEndpoint> connectedPlayers;
     private HostEngine hostEngine;
 
-    public ServerNetworkInterface(IPAddress ipAddress, int portNum, int maxClients) : base(ipAddress, portNum)
+    protected override void Awake()
     {
-        this.maxPlayers = maxClients;
-
+        base.Awake();
         // keep list (dict) of TCP players that are currently connected
         connectedPlayers = new ConcurrentDictionary<int, NetworkEndpoint>();
         for (int i = 0; i < maxPlayers; i++)
@@ -26,9 +25,9 @@ public class ServerNetworkInterface : BaseNetworkInterface
         }
     }
 
-    public override void Initialize(BaseEngine engine, ConsoleLogger logger, string processName)
+    public override void Initialize(IPAddress ipAddress, int portNum, BaseEngine engine, ConsoleLogger logger, string processName)
     {
-        base.Initialize(engine, logger, processName);
+        base.Initialize(ipAddress, portNum, engine, logger, processName);
         hostEngine = (HostEngine)engine;
         
         // listen for incoming connections on new thread
@@ -63,6 +62,14 @@ public class ServerNetworkInterface : BaseNetworkInterface
         connectedPlayers[id] = null;
     }
 
+    public void SendMessage(int clientID, INetworkPacket pkt)
+    {
+        if (clientID >= 0)
+        {
+            connectedPlayers[clientID].SendMessage(pkt);
+        }
+    }
+    
     public void Broadcast(int senderID, INetworkPacket pkt)
     {
         // forward received message to all players except the one who sent it
@@ -109,7 +116,7 @@ public class ServerNetworkInterface : BaseNetworkInterface
                     // send initial connect message to new client
                     //ConnectResponsePacket pkt = new ConnectResponsePacket(true, netPlayer.id);
                     //netPlayer.SendMessage(pkt);
-                    Thread clientListenThread = new Thread(netPlayer.GetMessage);
+                    Thread clientListenThread = new Thread(netPlayer.ContinuouslyGetMessages);
                     clientListenThread.Start();
                 }
                 else
@@ -164,6 +171,12 @@ public class ServerNetworkInterface : BaseNetworkInterface
             }
             case MessageIDs.Disconnect_ToServer :
             {
+                break;
+            }
+            case MessageIDs.GameStart_ToServer :
+            {
+                GameStartPacket pkt = new GameStartPacket(buffer);
+                hostEngine.StartGame();
                 break;
             }
             case MessageIDs.Chat_ToServer :

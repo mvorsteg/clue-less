@@ -7,11 +7,19 @@ public class BaseEngine : MonoBehaviour
 {
     public Board board;
     public Dictionary<int, PlayerState> players;
-    public ConsoleLogger logger;
+    public GameState state;
+    public CardDeck deck;
+    public ConsoleLogger logger;    
 
-    private void Awake()
+    protected virtual void Awake()
     {
         players = new Dictionary<int, PlayerState>();
+    }
+
+    public virtual bool StartGame()
+    {
+        deck.Initialize();
+        return true;
     }
 
     public virtual bool AddPlayer(int playerID, string name, CharacterType assignedCharacter)
