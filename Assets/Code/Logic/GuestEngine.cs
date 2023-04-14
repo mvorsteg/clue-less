@@ -6,13 +6,41 @@ using UnityEngine;
 public class GuestEngine : BaseEngine
 {
     public PlayerState player;
+    public StatusUI statusUI;
 
     public int ID { get => player.playerID; }
 
-    public void AssignFromServer(int playerID, CharacterType assignedCharacter)
+    public override bool StartGame()
     {
-        player = new PlayerState(playerID, "test name", assignedCharacter);
+        base.StartGame();
+        return true;
+    }
+
+    public override void SetTurn(int turn, TurnAction action)
+    {
+        base.SetTurn(turn, action);
+        if (player.playerID == turn)
+        {
+            statusUI.SetTurnActionText(player.playerName, action);
+            Log(String.Format("It is your turn"));
+        }
+        else if (players.TryGetValue(turn, out PlayerState player))
+        {
+            statusUI.SetTurnActionText(player.playerName, action);
+        }
+    }
+
+    public void AssignFromServer(int playerID, string name, CharacterType assignedCharacter)
+    {
+        player = new PlayerState(playerID, name, assignedCharacter);
         Log(String.Format("Joined server as {0} (Assigned ID is {1})", assignedCharacter, playerID));
+    }
+
+    public bool AssignClueCards(List<CharacterType> characterClues, List<WeaponType> weaponClues, List<RoomType> roomClues)
+    {
+        player.cards = deck.GetCardsFromClues(characterClues, weaponClues, roomClues);
+        Log(String.Format("{0}'s cards are {1}", player.playerName, String.Join(", ", player.cards.Select(x => x.cardName))));
+        return true;
     }
 
     public override bool AddPlayer(int playerID, string name, CharacterType assignedCharacter)
@@ -20,6 +48,7 @@ public class GuestEngine : BaseEngine
         if (players.TryAdd(playerID, new PlayerState(playerID, name, assignedCharacter)))
         {
             Log(String.Format("{0} Joined server as {1} (Assigned ID is {2})", name, assignedCharacter, playerID));
+            state = new GameState(players.Keys.Count);
             return true;
         }
         
@@ -48,40 +77,41 @@ public class GuestEngine : BaseEngine
 
     public bool MovePlayer(int playerID, RoomType newRoom)
     {
+        bool status = false;
         if (playerID == ID)
         {
             Log(String.Format("Moved to {0}", newRoom));
-            return true;
+            status = true;
         }
         else if (players.TryGetValue(playerID, out PlayerState otherPlayer))
         {
             Log(String.Format("{0} moved to {1}", otherPlayer.playerName, newRoom));
-            return true;
+            status = true;
         }
-        Log(String.Format("Error moving player {0} to {1}", playerID, newRoom));
-        return false;
+        else
+        {
+            Log(String.Format("Error moving player {0} to {1}", playerID, newRoom));
+        }
+        return status;
     }
 
-    public bool AssignClueCards(List<CharacterType> characterClues, List<WeaponType> weaponClues, List<RoomType> roomClues)
+    public override bool Guess(int playerID, bool isFinal, CharacterType character, WeaponType weapon, RoomType room)
     {
-        player.cards = deck.GetCardsFromClues(characterClues, weaponClues, roomClues);
-        Log(String.Format("{0}'s cards are {1}", player.playerName, String.Join(", ", player.cards.Select(x => x.cardName))));
-        return true;
-    }
-
-    public bool Guess(int playerID, bool isFinal, CharacterType character, WeaponType weapon, RoomType room)
-    {
+        bool status = false;
         if (playerID == ID)
         {
             Log(String.Format("Guessed {0} used the {1} in the {2}", character, weapon, room));
-            return true;
+            status = true;
         }
         else if (players.TryGetValue(playerID, out PlayerState otherPlayer))
         {
             Log(String.Format("{0} guessed {1} used the {2} in the {3}", GetPlayerName(playerID), character, weapon, room));
-            return true;
+            status = true;
         }
-        Log("Error with guess");
-        return false;
+        else
+        {
+            Log("Error with guess");
+        }
+        return status;
     }
 }

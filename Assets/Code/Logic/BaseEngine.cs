@@ -14,17 +14,37 @@ public class BaseEngine : MonoBehaviour
     protected virtual void Awake()
     {
         players = new Dictionary<int, PlayerState>();
+        state = new GameState(0);
     }
 
     public virtual bool StartGame()
     {
+        state = new GameState(players.Keys.Count);
         deck.Initialize();
         return true;
+    }
+
+    public virtual void SetTurn(int turn, TurnAction action)
+    {
+        if (state.turn != turn)
+        {
+            if (players.TryGetValue(turn, out PlayerState player))
+            {
+                Log(String.Format("It is {0}'s turn", player.playerName));
+            }
+        }
+        state.turn = turn;
+        state.action = action;
     }
 
     public virtual bool AddPlayer(int playerID, string name, CharacterType assignedCharacter)
     {
         // intentionally blank for now
+        return false;
+    }
+
+    public virtual bool Guess(int playerID, bool isFinal, CharacterType character, WeaponType weapon, RoomType room)
+    {
         return false;
     }
 

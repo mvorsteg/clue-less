@@ -214,8 +214,11 @@ public class ServerNetworkInterface : BaseNetworkInterface
             {
                 GuessPacket pkt = new GuessPacket(buffer);
                 Log(String.Format("Client{0} guessed {1} used the {2} in the {3}", clientID, pkt.character.ToString(), pkt.weapon.ToString(), pkt.room.ToString()));
-                GuessPacket outPkt = new GuessPacket(false, clientID, pkt.isFinalGuess, pkt.character, pkt.weapon, pkt.room);
-                Broadcast(NetworkConstants.BROADCAST_ALL_CLIENTS, outPkt);
+                if (hostEngine.Guess(pkt.userID, pkt.isFinalGuess, pkt.character, pkt.weapon, pkt.room))
+                {
+                    GuessPacket outPkt = new GuessPacket(false, clientID, pkt.isFinalGuess, pkt.character, pkt.weapon, pkt.room);
+                    Broadcast(NetworkConstants.BROADCAST_ALL_CLIENTS, outPkt);
+                }
                 break;
             }
             case MessageIDs.Reveal_ToServer :

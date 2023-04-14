@@ -26,6 +26,7 @@ public enum MessageIDs
     ClientDrop_ToClient,                // sent to all clients when a client leaves the server
     Chat_ToClient,                      // sent to all clients when a player sends a chat message
     GameStart_ToClient,                 // sent to all clients when host starts game 
+    Turn_ToClient,                      // sent to all clients when an action occurs that changes the turn or action
     CharUpdate_ToClient,                // sent to all clients when a player changes character/color
     MoveToRoom_ToClient,                // sent to all clients when a player moves to a new room
     Guess_ToClient,                     // sent to all clients when player makes a guess

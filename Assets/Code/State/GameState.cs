@@ -6,10 +6,11 @@ public class GameState
     public int turn;    // which player's turn it is
     public TurnAction action;
 
-    private int numPlayers;
+    public int numPlayers;
 
     public GameState(int numPlayers)
     {
         this.numPlayers = numPlayers;
+        this.turn = -1;
     }
 }

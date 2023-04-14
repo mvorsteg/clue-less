@@ -84,7 +84,7 @@ public class ClientNetworkInterface : BaseNetworkInterface
                 {
                     if (pkt.isAccepted)
                     {
-                        guestEngine.AssignFromServer(pkt.assignedId, pkt.assignedCharacter);
+                        guestEngine.AssignFromServer(pkt.assignedId, processName, pkt.assignedCharacter);
                         netPlayer.id = pkt.assignedId;
 
                         // record all other players
@@ -119,7 +119,14 @@ public class ClientNetworkInterface : BaseNetworkInterface
                 if (pkt.userID == netPlayer.id)
                 {
                     guestEngine.AssignClueCards(pkt.characterClues, pkt.weaponClues, pkt.roomClues);
+                    guestEngine.StartGame();
                 }
+                break;
+            }
+            case MessageIDs.Turn_ToClient :
+            {
+                TurnPacket pkt = new TurnPacket(buffer);
+                guestEngine.SetTurn(pkt.turn, pkt.action);
                 break;
             }
             case MessageIDs.Chat_ToClient :

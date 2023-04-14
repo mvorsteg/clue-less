@@ -10,23 +10,39 @@ public class HostEngine : BaseEngine
     {
         base.StartGame();
         // send cards to players
-        int cardsPerPlayer = Mathf.CeilToInt((float)(deck.TotalCards - 3) / (float)players.Keys.Count);
+        int cardsPerPlayer = Mathf.CeilToInt((float)(deck.TotalCards - 3) / (float)state.numPlayers);
+        int turn = UnityEngine.Random.Range(0, state.numPlayers);
         foreach (PlayerState player in players.Values)
         {
             player.cards = deck.GetCards(cardsPerPlayer);
 
             RoomType initialRoom = board.GetStartingRoom(player.character);
             MoveToRoomPacket roomPkt = new MoveToRoomPacket(false, player.playerID, initialRoom);
-            netInterface.Broadcast(NetworkConstants.SERVER_ID, roomPkt);
+            netInterface.Broadcast(NetworkConstants.BROADCAST_ALL_CLIENTS, roomPkt);
+        }
+        foreach (PlayerState player in players.Values)
+        {
             if (CardDeck.GetCluesFromCards(player.cards, out List<CharacterType> characters, out List<WeaponType> weapons, out List<RoomType> rooms))
             {
-                GameStartPacket gamePkt = new GameStartPacket(false, player.playerID, characters, weapons, rooms);
+                GameStartPacket gamePkt = new GameStartPacket(false, player.playerID, turn, characters, weapons, rooms);
                 netInterface.SendMessage(player.playerID, gamePkt);
             }
+            else
+            {
+                Log(String.Format("Error parsing {0} clues!!!", player.playerName));
+            }
         }
-
+        SetTurn(turn, TurnAction.MoveRoom);
         return true;        
     }
+
+    public override void SetTurn(int turn, TurnAction action)
+    {
+        base.SetTurn(turn, action);
+        TurnPacket pkt = new TurnPacket(turn, action);
+        netInterface.Broadcast(NetworkConstants.BROADCAST_ALL_CLIENTS, pkt);
+    }
+
     public bool AddPlayer(int playerID, string name, out CharacterType assignedCharacter)
     {
         // find available character to assign
@@ -47,6 +63,7 @@ public class HostEngine : BaseEngine
                 PlayerState newPlayer = new PlayerState(playerID, name, assignedCharacter);
                 if (players.TryAdd(playerID, newPlayer))
                 {
+                    state = new GameState(players.Keys.Count);
                     Log(string.Format("Adding player {0} to session", playerID));
                     return true;
                 }
@@ -92,15 +109,40 @@ public class HostEngine : BaseEngine
     {
         if (players.TryGetValue(playerID, out PlayerState playerState))
         {
-            if (board.IsValidMove(playerState.currentRoom, destRoom))
+            if (state.turn == playerID && state.action == TurnAction.MoveRoom)
             {
-                // do move
-                playerState.currentRoom = destRoom;
-                Log(String.Format("Moved Client{0} to {1}", playerID, destRoom.ToString()));
-                return true;
+                if (board.IsValidMove(playerState.currentRoom, destRoom))
+                {
+                    // do move
+                    playerState.currentRoom = destRoom;
+                    SetTurn(state.turn, TurnAction.MakeGuess);
+                    Log(String.Format("Moved Client{0} to {1}", playerID, destRoom.ToString()));
+                    return true;
+                }
+            }
+            else
+            {
+                Log(String.Format("{0} cannot move now", playerState.playerName));
             }
         }
         Log("Illegal move");
+        return false;
+    }
+
+    public override bool Guess(int playerID, bool isFinal, CharacterType character, WeaponType weapon, RoomType room)
+    {
+        if (players.TryGetValue(playerID, out PlayerState playerState))
+        {
+            if (state.turn == playerID && state.action == TurnAction.MakeGuess)
+            {
+                SetTurn(state.turn, TurnAction.RevealCards);
+            }
+            else
+            {
+                Log(String.Format("{0} cannot guess now", playerState.playerName));
+            }
+        }
+        Log("Illegal guess");
         return false;
     }
 }

@@ -6,6 +6,7 @@ public struct GameStartPacket : INetworkPacket
 {
     public MessageIDs ID { get; private set; }
     public int userID;
+    public int turn;
     public List<CharacterType> characterClues;
     public List<WeaponType> weaponClues;
     public List<RoomType> roomClues;
@@ -14,14 +15,16 @@ public struct GameStartPacket : INetworkPacket
     {
         ID = isToServer ? MessageIDs.GameStart_ToServer : MessageIDs.GameStart_ToClient;
         this.userID = userID;
+        this.turn = 0;
         this.characterClues = new List<CharacterType>();
         this.weaponClues = new List<WeaponType>();
         this.roomClues = new List<RoomType>();
     }
-    public GameStartPacket(bool isToServer, int userID, List<CharacterType> characterClues, List<WeaponType> weaponClues, List<RoomType> roomClues)
+    public GameStartPacket(bool isToServer, int userID, int turn, List<CharacterType> characterClues, List<WeaponType> weaponClues, List<RoomType> roomClues)
     {
         ID = isToServer ? MessageIDs.GameStart_ToServer : MessageIDs.GameStart_ToClient;
         this.userID = userID;
+        this.turn = turn;
         this.characterClues = characterClues;
         this.weaponClues = weaponClues;
         this.roomClues = roomClues;
@@ -33,6 +36,8 @@ public struct GameStartPacket : INetworkPacket
         ID = (MessageIDs)IPAddress.NetworkToHostOrder(BitConverter.ToInt32(buffer, idx));
         idx += sizeof(Int32);
         userID = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(buffer, idx));
+        idx += sizeof(Int32);
+        turn = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(buffer, idx));
         idx += sizeof(Int32);
         characterClues = new List<CharacterType>();
         weaponClues = new List<WeaponType>();
@@ -80,8 +85,11 @@ public struct GameStartPacket : INetworkPacket
         tempBytes = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(userID));
         tempBytes.CopyTo(buffer, idx);
         idx += sizeof(Int32);
+        tempBytes = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(turn));
+        tempBytes.CopyTo(buffer, idx);
+        idx += sizeof(Int32);
         int i;
-        for (i = 0; i < characterClues.Count; i++)
+        for (i = 0; i < Math.Min(characterClues.Count, NetworkConstants.MAX_CARDS_PER_PLAYER); i++)
         {
             tempBytes = BitConverter.GetBytes(IPAddress.HostToNetworkOrder((int)characterClues[i]));
             tempBytes.CopyTo(buffer, idx);
@@ -93,7 +101,7 @@ public struct GameStartPacket : INetworkPacket
             tempBytes.CopyTo(buffer, idx);
             idx += sizeof(Int32);
         }
-        for (i = 0; i < weaponClues.Count; i++)
+        for (i = 0; i < Math.Min(weaponClues.Count, NetworkConstants.MAX_CARDS_PER_PLAYER); i++)
         {
             tempBytes = BitConverter.GetBytes(IPAddress.HostToNetworkOrder((int)weaponClues[i]));
             tempBytes.CopyTo(buffer, idx);
@@ -105,7 +113,7 @@ public struct GameStartPacket : INetworkPacket
             tempBytes.CopyTo(buffer, idx);
             idx += sizeof(Int32);
         }
-        for (i = 0; i < weaponClues.Count; i++)
+        for (i = 0; i < Math.Min(roomClues.Count, NetworkConstants.MAX_CARDS_PER_PLAYER); i++)
         {
             tempBytes = BitConverter.GetBytes(IPAddress.HostToNetworkOrder((int)roomClues[i]));
             tempBytes.CopyTo(buffer, idx);
