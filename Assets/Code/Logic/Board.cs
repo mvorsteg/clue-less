@@ -12,9 +12,11 @@ public class Board : MonoBehaviour
     {
         rooms = new RoomType[,]
         {
-            { RoomType.Study, RoomType.Hall, RoomType.Lounge },
-            { RoomType.Library, RoomType.BilliardRoom, RoomType.DiningRoom },
-            { RoomType.Conservatory, RoomType.Ballroom, RoomType.Kitchen} 
+            { RoomType.Study, RoomType.HW_StudyHall, RoomType.Hall, RoomType.HW_HallLounge, RoomType.Lounge },
+            { RoomType.HW_StudyLib, RoomType.Invalid, RoomType.HW_HallBill, RoomType.Invalid, RoomType.HW_LoungeDining },
+            { RoomType.Library, RoomType.HW_LibBill, RoomType.BilliardRoom, RoomType.HW_BillDining, RoomType.DiningRoom },
+            { RoomType.HW_LibCons, RoomType.Invalid, RoomType.HW_BillBall, RoomType.Invalid, RoomType.HW_DiningKitchen },
+            { RoomType.Conservatory, RoomType.HW_ConsBall, RoomType.Ballroom, RoomType.HW_BallKitchen, RoomType.Kitchen } 
         };
         secretPassages = new Dictionary<RoomType, RoomType> 
         {
@@ -26,9 +28,16 @@ public class Board : MonoBehaviour
 
         startingRooms = new Dictionary<CharacterType, RoomType>
         {
-
+            { CharacterType.Plum, RoomType.HW_StudyLib },
+            { CharacterType.Scarlet, RoomType.HW_HallLounge },
+            { CharacterType.Mustard, RoomType.HW_LoungeDining },
+            { CharacterType.Peacock, RoomType.HW_LibCons },
+            { CharacterType.Green, RoomType.HW_ConsBall },
+            { CharacterType.White, RoomType.HW_BallKitchen },
         };
     }
+
+
 
     public RoomType GetStartingRoom(CharacterType character)
     {
@@ -79,5 +88,10 @@ public class Board : MonoBehaviour
             return secretRoom == destRoom;
         }
         return false;
+    }
+
+    public bool IsGuessRoom(RoomType room)
+    {
+        return room <= RoomType.Kitchen;
     }
 }

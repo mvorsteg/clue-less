@@ -204,8 +204,8 @@ public class ServerNetworkInterface : BaseNetworkInterface
                 Log(String.Format("Client{0} requested to move to {1}", clientID, pkt.room.ToString()));
                 if (hostEngine.MovePlayer(clientID, pkt.room))
                 {
-                    MoveToRoomPacket outPkt = new MoveToRoomPacket(false, clientID, pkt.room);
-                    Broadcast(NetworkConstants.BROADCAST_ALL_CLIENTS, outPkt);
+                    // MoveToRoomPacket outPkt = new MoveToRoomPacket(false, clientID, pkt.room);
+                    // Broadcast(NetworkConstants.BROADCAST_ALL_CLIENTS, outPkt);
                 }
                 
                 break;

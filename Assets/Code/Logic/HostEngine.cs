@@ -118,7 +118,16 @@ public class HostEngine : BaseEngine
                 {
                     // do move
                     playerState.currentRoom = destRoom;
-                    SetTurn(state.turn, TurnAction.MakeGuess);
+                    MoveToRoomPacket outPkt = new MoveToRoomPacket(false, playerID, destRoom);
+                    netInterface.Broadcast(NetworkConstants.BROADCAST_ALL_CLIENTS, outPkt);
+                    if (board.IsGuessRoom(playerState.currentRoom))
+                    {
+                        SetTurn(state.turn, TurnAction.MakeGuess);
+                    }
+                    else
+                    {
+                        EndTurn(playerID);
+                    }
                     Log(String.Format("Moved Client{0} to {1}", playerID, destRoom.ToString()));
                     return true;
                 }

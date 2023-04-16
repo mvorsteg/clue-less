@@ -7,6 +7,7 @@ public class GuestEngine : BaseEngine
 {
     public PlayerState player;
     public StatusUI statusUI;
+    public GuessUI guessUI;
 
     public int ID { get => player.playerID; }
 
@@ -23,6 +24,10 @@ public class GuestEngine : BaseEngine
         {
             statusUI.SetTurnActionText(player.playerName, action);
             Log(String.Format("It is your turn"));
+            if (action == TurnAction.MakeGuess)
+            {
+                guessUI.PromptGuess(false, player.currentRoom);
+            }
         }
         else if (players.TryGetValue(turn, out PlayerState player))
         {
@@ -80,11 +85,13 @@ public class GuestEngine : BaseEngine
         bool status = false;
         if (playerID == ID)
         {
+            player.currentRoom = newRoom;
             Log(String.Format("Moved to {0}", newRoom));
             status = true;
         }
         else if (players.TryGetValue(playerID, out PlayerState otherPlayer))
         {
+            otherPlayer.currentRoom = newRoom;
             Log(String.Format("{0} moved to {1}", otherPlayer.playerName, newRoom));
             status = true;
         }
