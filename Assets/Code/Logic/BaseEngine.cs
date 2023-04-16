@@ -48,6 +48,11 @@ public class BaseEngine : MonoBehaviour
         return false;
     }
 
+    public virtual bool Reveal(int sendID, int recvID, ClueType clueType, CharacterType character, WeaponType weapon, RoomType room)
+    {
+        return false;
+    }
+
     public string GetPlayerName(int playerID)
     {
         if (players.TryGetValue(playerID, out PlayerState player))

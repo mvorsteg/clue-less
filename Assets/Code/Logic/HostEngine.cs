@@ -6,6 +6,9 @@ using UnityEngine;
 public class HostEngine : BaseEngine
 {
     public ServerNetworkInterface netInterface;
+
+    private Dictionary<int, PlayerState> playersNeedToReveal = new Dictionary<int, PlayerState>();
+
     public override bool StartGame()
     {
         base.StartGame();
@@ -136,6 +139,29 @@ public class HostEngine : BaseEngine
             if (state.turn == playerID && state.action == TurnAction.MakeGuess)
             {
                 SetTurn(state.turn, TurnAction.RevealCards);
+                // sort out players that need to reveal
+                playersNeedToReveal.Clear();
+                foreach (PlayerState player in players.Values)
+                {
+                    if (player.playerID != playerID)
+                    {
+                        foreach (ClueCard card in player.cards)
+                        {
+                            if ((card.TryGetCharacterType(out CharacterType cardCharacter) && cardCharacter == character) ||
+                                (card.TryGetWeaponType(out WeaponType cardWeapon) && cardWeapon == weapon) ||
+                                (card.TryGetRoomType(out RoomType cardRoom) && cardRoom == room))
+                            {
+                                playersNeedToReveal.Add(player.playerID, player);
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (playersNeedToReveal.Count == 0)
+                {
+                    SetTurn(state.turn, TurnAction.Idle);
+                }
+                return true;
             }
             else
             {
@@ -145,4 +171,71 @@ public class HostEngine : BaseEngine
         Log("Illegal guess");
         return false;
     }
+
+    public override bool Reveal(int sendID, int recvID, ClueType clueType, CharacterType character, WeaponType weapon, RoomType room)
+    {
+        bool status = false;
+        if (state.turn == recvID && state.action == TurnAction.RevealCards)
+        {
+            if (playersNeedToReveal.TryGetValue(sendID, out PlayerState player))
+            {
+                switch (clueType)
+                {
+                    case ClueType.Character:
+                    {
+                        status = player.cards.Any(x => x.TryGetCharacterType(out CharacterType c) && c == character);
+                        break;
+                    }
+                    case ClueType.Weapon:
+                    {
+                        status = player.cards.Any(x => x.TryGetWeaponType(out WeaponType w) && w == weapon);
+                        break;
+                    }
+                    case ClueType.Room:
+                    {
+                        status = player.cards.Any(x => x.TryGetRoomType(out RoomType r) && r == room);
+                        break;
+                    }
+                    default:
+                    {
+                        Log("Unrecognized clue type");
+                        break;
+                    }
+                }
+                if (status)
+                {
+                    playersNeedToReveal.Remove(sendID);
+                    if (playersNeedToReveal.Count == 0)
+                    {
+                        SetTurn(state.turn, TurnAction.Idle);
+                    }
+                }
+            }
+            else
+            {
+                Log(String.Format("Player{0} does not need to reveal anything now", sendID));
+            }
+        }
+        else
+        {
+            Log(String.Format("Player{0} does not need cards revealed to them now", recvID));
+        }
+        return status;
+    }
+
+    public bool EndTurn(int userID)
+    {
+        if (state.turn == userID && state.action == TurnAction.Idle)
+        {
+            int nextTurn = (state.turn + 1) % state.numPlayers;
+            SetTurn(nextTurn, TurnAction.MoveRoom);
+            return true;
+        }
+        else
+        {
+            Log(String.Format("Player{0} cannot end their turn right now", userID));
+        }
+        return false;
+    }
+
 }

@@ -114,4 +114,16 @@ public class GuestEngine : BaseEngine
         }
         return status;
     }
+
+    public override bool Reveal(int sendID, int recvID, ClueType clueType, CharacterType character, WeaponType weapon, RoomType room)
+    {
+        if (recvID == ID)
+        {
+            if (players.TryGetValue(sendID, out PlayerState otherPlayer))
+            {
+                Log(String.Format("{0} revealed card {1}", otherPlayer.playerName, clueType == ClueType.Character ? character : clueType == ClueType.Weapon ? weapon : room));
+            }
+        }
+        return true;
+    }
 }

@@ -223,6 +223,24 @@ public class ServerNetworkInterface : BaseNetworkInterface
             }
             case MessageIDs.Reveal_ToServer :
             {
+                RevealPacket pkt = new RevealPacket(buffer);
+                Log(String.Format("Client{0} revealed {1}", clientID, pkt.clueType == ClueType.Character ? pkt.character : pkt.clueType == ClueType.Weapon ? pkt.weapon : pkt.room));
+                if (hostEngine.Reveal(pkt.sendID, pkt.recvID, pkt.clueType, pkt.character, pkt.weapon, pkt.room))
+                {
+                    // forward packet to the player whose turn it is
+                    RevealPacket outPkt = new RevealPacket(false, pkt.sendID, pkt.recvID, pkt.clueType, pkt.character, pkt.weapon, pkt.room);
+                    SendMessage(outPkt.recvID, outPkt);
+                }
+                break;
+            }
+            case MessageIDs.TurnDone_ToServer :
+            {
+                TurnDonePacket pkt = new TurnDonePacket(buffer);
+                Log("Client{0} is done their turn");
+                if (hostEngine.EndTurn(pkt.userID))
+                {
+
+                }
                 break;
             }
             default :

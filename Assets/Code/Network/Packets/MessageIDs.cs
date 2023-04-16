@@ -13,6 +13,7 @@ public enum MessageIDs
     MoveToRoom_ToServer,                // sent to server when player moves to a new room
     Guess_ToServer,                     // sent to server when player makes a guess
     Reveal_ToServer,                    // sent to server when player responds to guess with a clue
+    TurnDone_ToServer,                  // sent to server when player is done with their turn
 
     #endregion
     

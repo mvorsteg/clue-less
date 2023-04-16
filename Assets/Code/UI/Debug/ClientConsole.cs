@@ -94,6 +94,37 @@ public class ClientConsole : MonoBehaviour
                     }
                     break;
                 }
+                case ("reveal"):
+                {
+                    string cardStr = tokens[1];
+                    RevealPacket pkt;
+                    if (Enum.TryParse<CharacterType>(cardStr, true, out CharacterType charEnum))
+                    {
+                        pkt = new RevealPacket(true, engine.ID, engine.state.turn, ClueType.Character, charEnum, 0, 0);
+                    }   
+                    else if (Enum.TryParse<WeaponType>(cardStr, true, out WeaponType weaponEnum))
+                    {
+                        pkt = new RevealPacket(true, engine.ID, engine.state.turn, ClueType.Weapon, 0, weaponEnum, 0);
+                    }
+                    else if (Enum.TryParse<RoomType>(cardStr, true, out RoomType roomEnum))
+                    {
+                        pkt = new RevealPacket(true, engine.ID, engine.state.turn, ClueType.Room, 0, 0, roomEnum);
+                    }
+                    else
+                    {
+                        // error parsing
+                        Log(String.Format("Error parsing clue type from {0}", cardStr));
+                        return;
+                    }
+                    clientInterface.SendMessage(pkt);
+                    break;
+                }
+                case ("done"):
+                {
+                    TurnDonePacket pkt = new TurnDonePacket(engine.ID);
+                    clientInterface.SendMessage(pkt);
+                    break;
+                }
                 default:
                 {
                     Log(String.Format("Unrecognized command {0}", tokens[0]));

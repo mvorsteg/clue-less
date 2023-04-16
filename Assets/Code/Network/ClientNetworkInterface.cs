@@ -157,8 +157,11 @@ public class ClientNetworkInterface : BaseNetworkInterface
                 break;
             }
             case MessageIDs.Reveal_ToClient :
-
+            {
+                RevealPacket pkt = new RevealPacket(buffer);
+                guestEngine.Reveal(pkt.sendID, pkt.recvID, pkt.clueType, pkt.character, pkt.weapon, pkt.room);
                 break;
+            }
             case MessageIDs.Win_ToClient :
 
                 break;
