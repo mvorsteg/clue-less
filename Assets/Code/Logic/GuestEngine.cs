@@ -6,8 +6,7 @@ using UnityEngine;
 public class GuestEngine : BaseEngine
 {
     public PlayerState player;
-    public StatusUI statusUI;
-    public GuessUI guessUI;
+    public MasterUI masterUI;
 
     public int ID { get => player.playerID; }
 
@@ -22,16 +21,16 @@ public class GuestEngine : BaseEngine
         base.SetTurn(turn, action);
         if (player.playerID == turn)
         {
-            statusUI.SetTurnActionText(player.playerName, action);
+            masterUI.SetTurn(player.playerName, action);
             Log(String.Format("It is your turn"));
             if (action == TurnAction.MakeGuess)
             {
-                guessUI.PromptGuess(false, player.currentRoom);
+                masterUI.PromptGuess(false, player.currentRoom);
             }
         }
         else if (players.TryGetValue(turn, out PlayerState player))
         {
-            statusUI.SetTurnActionText(player.playerName, action);
+            masterUI.SetTurn(player.playerName, action);
         }
     }
 
@@ -44,6 +43,7 @@ public class GuestEngine : BaseEngine
     public bool AssignClueCards(List<CharacterType> characterClues, List<WeaponType> weaponClues, List<RoomType> roomClues)
     {
         player.cards = deck.GetCardsFromClues(characterClues, weaponClues, roomClues);
+        masterUI.SetCards(player.cards);
         Log(String.Format("{0}'s cards are {1}", player.playerName, String.Join(", ", player.cards.Select(x => x.cardName))));
         return true;
     }
