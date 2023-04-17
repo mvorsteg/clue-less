@@ -145,36 +145,63 @@ public class HostEngine : BaseEngine
     {
         if (players.TryGetValue(playerID, out PlayerState playerState))
         {
-            if (state.turn == playerID && state.action == TurnAction.MakeGuess)
+            if (!isFinal)
             {
-                SetTurn(state.turn, TurnAction.RevealCards);
-                // sort out players that need to reveal
-                playersNeedToReveal.Clear();
-                foreach (PlayerState player in players.Values)
+                if (state.turn == playerID && state.action == TurnAction.MakeGuess)
                 {
-                    if (player.playerID != playerID)
+                    SetTurn(state.turn, TurnAction.RevealCards);
+                    // sort out players that need to reveal
+                    playersNeedToReveal.Clear();
+                    foreach (PlayerState player in players.Values)
                     {
-                        foreach (ClueCard card in player.cards)
+                        if (player.playerID != playerID)
                         {
-                            if ((card.TryGetCharacterType(out CharacterType cardCharacter) && cardCharacter == character) ||
-                                (card.TryGetWeaponType(out WeaponType cardWeapon) && cardWeapon == weapon) ||
-                                (card.TryGetRoomType(out RoomType cardRoom) && cardRoom == room))
+                            foreach (ClueCard card in player.cards)
                             {
-                                playersNeedToReveal.Add(player.playerID, player);
-                                break;
+                                if ((card.TryGetCharacterType(out CharacterType cardCharacter) && cardCharacter == character) ||
+                                    (card.TryGetWeaponType(out WeaponType cardWeapon) && cardWeapon == weapon) ||
+                                    (card.TryGetRoomType(out RoomType cardRoom) && cardRoom == room))
+                                {
+                                    playersNeedToReveal.Add(player.playerID, player);
+                                    break;
+                                }
                             }
                         }
                     }
+                    if (playersNeedToReveal.Count == 0)
+                    {
+                        SetTurn(state.turn, TurnAction.Idle);
+                    }
+                    return true;
                 }
-                if (playersNeedToReveal.Count == 0)
+                else
                 {
-                    SetTurn(state.turn, TurnAction.Idle);
+                    Log(String.Format("{0} cannot guess now", playerState.playerName));
                 }
-                return true;
             }
             else
             {
-                Log(String.Format("{0} cannot guess now", playerState.playerName));
+                if (state.turn == playerID)
+                {
+                    if (deck.IsCorrectGuess(character, weapon, room))
+                    {
+                        // win
+                        WinLosePacket pkt = new WinLosePacket(playerID, true);
+                        netInterface.Broadcast(NetworkConstants.BROADCAST_ALL_CLIENTS, pkt);
+                    }
+                    else
+                    {
+                        // lose
+                        playerState.isActive = false;
+                        WinLosePacket pkt = new WinLosePacket(playerID, false);
+                        netInterface.Broadcast(NetworkConstants.BROADCAST_ALL_CLIENTS, pkt);
+                        EndTurn(playerID);
+                    }
+                }
+                else
+                {
+                    Log(String.Format("{0} cannot accuse now", playerState.playerName));
+                }
             }
         }
         Log("Illegal guess");
@@ -234,9 +261,16 @@ public class HostEngine : BaseEngine
 
     public bool EndTurn(int userID)
     {
-        if (state.turn == userID && state.action == TurnAction.Idle)
+        
+        
+        if ((state.turn == userID && state.action == TurnAction.Idle) ||
+            (players.TryGetValue(userID, out PlayerState prevPlayerState) && !prevPlayerState.isActive))
         {
             int nextTurn = (state.turn + 1) % state.numPlayers;
+            if (players.TryGetValue(nextTurn, out PlayerState nextPlayerState) && !nextPlayerState.isActive)
+            {
+                nextTurn = (nextTurn + 1) % state.numPlayers;
+            }
             SetTurn(nextTurn, TurnAction.MoveRoom);
             return true;
         }

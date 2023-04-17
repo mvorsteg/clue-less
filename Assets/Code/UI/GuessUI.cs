@@ -52,6 +52,10 @@ public class GuessUI : MonoBehaviour
                 return;
             }
         }
+        else
+        {
+            roomDropdown.interactable = true;
+        }
         this.isFinal = isFinal;
         guessObj.SetActive(true);
     }

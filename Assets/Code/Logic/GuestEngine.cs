@@ -8,6 +8,8 @@ public class GuestEngine : BaseEngine
     public PlayerState player;
     public MasterUI masterUI;
 
+    private Tuple<CharacterType, WeaponType, RoomType> lastGuess;
+
     public int ID { get => player.playerID; }
 
     public override bool StartGame()
@@ -21,16 +23,16 @@ public class GuestEngine : BaseEngine
         base.SetTurn(turn, action);
         if (player.playerID == turn)
         {
-            masterUI.SetTurn(player.playerName, action);
+            masterUI.SetTurn(player.playerName, action, true);
             Log(String.Format("It is your turn"));
-            if (action == TurnAction.MakeGuess)
-            {
-                masterUI.PromptGuess(false, player.currentRoom);
-            }
+            // if (action == TurnAction.MakeGuess)
+            // {
+            //     masterUI.PromptGuess(false, player.currentRoom);
+            // }
         }
         else if (players.TryGetValue(turn, out PlayerState player))
         {
-            masterUI.SetTurn(player.playerName, action);
+            masterUI.SetTurn(player.playerName, action, false);
         }
     }
 
@@ -113,6 +115,8 @@ public class GuestEngine : BaseEngine
         else if (players.TryGetValue(playerID, out PlayerState otherPlayer))
         {
             Log(String.Format("{0} guessed {1} used the {2} in the {3}", GetPlayerName(playerID), character, weapon, room));
+            // store last guess so we can refer to it if we need to reveal any cards
+            lastGuess = new Tuple<CharacterType, WeaponType, RoomType>(character, weapon, room);
             status = true;
         }
         else
@@ -122,15 +126,97 @@ public class GuestEngine : BaseEngine
         return status;
     }
 
+    public List<ClueCard> GetCardsToReveal()
+    {
+        List<ClueCard> cardsToReveal = new List<ClueCard>();
+        foreach (ClueCard card in player.cards)
+        {
+            if ((card.TryGetCharacterType(out CharacterType cardCharacter) && cardCharacter == lastGuess.Item1) ||
+                (card.TryGetWeaponType(out WeaponType cardWeapon) && cardWeapon == lastGuess.Item2) ||
+                (card.TryGetRoomType(out RoomType cardRoom) && cardRoom == lastGuess.Item3))
+            {
+                cardsToReveal.Add(card);
+            }
+        }
+        return cardsToReveal;
+    }
+
     public override bool Reveal(int sendID, int recvID, ClueType clueType, CharacterType character, WeaponType weapon, RoomType room)
     {
         if (recvID == ID)
         {
             if (players.TryGetValue(sendID, out PlayerState otherPlayer))
             {
+                ClueCard receivedCard;
+                
+                switch(clueType)
+                {
+                    case ClueType.Character:
+                    {
+                        if (!deck.TryGetCard(character, out receivedCard))
+                        {
+                            // error
+                            Log(String.Format("Error parsing ClueCard from {0}", character.ToString()));
+                            return false;
+                        }
+                        break;
+                    }
+                    case ClueType.Weapon:
+                    {
+                        if (!deck.TryGetCard(weapon, out receivedCard))
+                        {
+                            // error
+                            Log(String.Format("Error parsing ClueCard from {0}", weapon.ToString()));
+                            return false;
+                        }
+                        break;
+                    }
+                    case ClueType.Room:
+                    {
+                        if (!deck.TryGetCard(room, out receivedCard))
+                        {
+                            // error
+                            Log(String.Format("Error parsing ClueCard from {0}", room.ToString()));
+                            return false;
+                        }
+                        break;
+                    }
+                    default:
+                    {
+                        Log(String.Format("Unrecognized ClueType {0}", clueType.ToString()));
+                        return false;
+                    }
+                }
+
+                masterUI.NotifyReveal(receivedCard, otherPlayer.playerName);
                 Log(String.Format("{0} revealed card {1}", otherPlayer.playerName, clueType == ClueType.Character ? character : clueType == ClueType.Weapon ? weapon : room));
             }
         }
         return true;
+    }
+
+    public void Win(int playerID)
+    {
+        if (playerID == ID)
+        {
+            masterUI.NotifyWinLose("You", true);
+        }
+        else if (players.TryGetValue(playerID, out PlayerState otherPlayer))
+        {
+            masterUI.NotifyWinLose(otherPlayer.playerName, true);
+        }
+    }
+
+    public void Lose(int playerID)
+    {
+        player.isActive = false;
+        if (playerID == ID)
+        {
+            masterUI.NotifyWinLose("You", false);
+        }
+        else if (players.TryGetValue(playerID, out PlayerState otherPlayer))
+        {
+            masterUI.NotifyWinLose(otherPlayer.playerName, false);
+        }
     }
 }

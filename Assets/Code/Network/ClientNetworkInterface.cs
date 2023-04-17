@@ -162,12 +162,19 @@ public class ClientNetworkInterface : BaseNetworkInterface
                 guestEngine.Reveal(pkt.sendID, pkt.recvID, pkt.clueType, pkt.character, pkt.weapon, pkt.room);
                 break;
             }
-            case MessageIDs.Win_ToClient :
-
+            case MessageIDs.WinLose_ToClient :
+            {
+                WinLosePacket pkt = new WinLosePacket(buffer);
+                if (pkt.win)
+                {
+                    guestEngine.Win(pkt.userID);
+                }
+                else
+                {
+                    guestEngine.Lose(pkt.userID);
+                }
                 break;
-            case MessageIDs.Lost_ToClient :
-
-                break;
+            }
             default :
 
                 break;

@@ -53,6 +53,24 @@ public class CardDeck : MonoBehaviour
         return retList;
     }
 
+    public bool IsCorrectGuess(CharacterType guessCharacter, WeaponType guessWeapon, RoomType guessRoom)
+    {
+        bool status = true;
+        if (correctCharacter.TryGetCharacterType(out CharacterType character))
+        {
+            status &= (character == guessCharacter);
+        }
+        if (correctWeapon.TryGetWeaponType(out WeaponType weapon))
+        {
+            status &= (weapon == guessWeapon);
+        }
+        if (correctRoom.TryGetRoomType(out RoomType room))
+        {
+            status &= (room == guessRoom);
+        }
+        return status;
+    }
+
     public static bool GetCluesFromCards(List<ClueCard> cards, out List<CharacterType> characters, out List<WeaponType> weapons, out List<RoomType> rooms)
     {
         bool ret = true;
@@ -99,5 +117,45 @@ public class CardDeck : MonoBehaviour
             cardList.Add(roomCards.First(x => x.name == room.ToString()));
         }
         return cardList;
+    }
+
+    public bool TryGetCard(CharacterType character, out ClueCard charCard)
+    {
+        foreach (ClueCard card in characterCards)
+        {
+            if (card.TryGetCharacterType(out CharacterType outChar) && outChar == character)
+            {
+                charCard = card;
+                return true;
+            }
+        }
+        charCard = null;
+        return false;
+    }
+    public bool TryGetCard(WeaponType weapon, out ClueCard weaponCard)
+    {
+        foreach (ClueCard card in weaponCards)
+        {
+            if (card.TryGetWeaponType(out WeaponType outWeapon) && outWeapon == weapon)
+            {
+                weaponCard = card;
+                return true;
+            }
+        }
+        weaponCard = null;
+        return false;
+    }
+    public bool TryGetCard(RoomType room, out ClueCard roomCard)
+    {
+        foreach (ClueCard card in roomCards)
+        {
+            if (card.TryGetRoomType(out RoomType outRoom) && outRoom == room)
+            {
+                roomCard = card;
+                return true;
+            }
+        }
+        roomCard = null;
+        return false;
     }
 }

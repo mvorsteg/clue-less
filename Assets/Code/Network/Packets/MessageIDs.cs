@@ -32,8 +32,7 @@ public enum MessageIDs
     MoveToRoom_ToClient,                // sent to all clients when a player moves to a new room
     Guess_ToClient,                     // sent to all clients when player makes a guess
     Reveal_ToClient,                    // sent to 1 client when a player responds to guess with a clue
-    Win_ToClient,                       // sent to all clients when a player wins the game
-    Lost_ToClient,                      // semt to all clients when a player loses the game
+    WinLose_ToClient,                       // sent to all clients when a player wins or loses the game
 
     #endregion
 }

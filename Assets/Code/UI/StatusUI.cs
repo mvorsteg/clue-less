@@ -6,7 +6,7 @@ public class StatusUI : MonoBehaviour
 {
     public Text turnText;
 
-    public void SetTurnActionText(string player, TurnAction action)
+    public void SetTurn(string player, TurnAction action)
     {
         string actionText = "";
         switch(action)

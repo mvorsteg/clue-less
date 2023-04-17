@@ -5,18 +5,20 @@ using UnityEngine.UI;
 public class CardsTabUI : MonoBehaviour
 {
     public Transform cardParent;
-    public GameObject cardPrefab;
+    public CardUI cardPrefab;
+
+    private void Start()
+    {
+        
+    }
 
     public void SetCards(List<ClueCard> cards)
     {
         foreach (ClueCard card in cards)
         {
-            GameObject newCard = Instantiate(cardPrefab, cardParent);
-            Text clueText = newCard.GetComponentInChildren<Text>();
-            if (clueText != null)
-            {
-                clueText.text = card.cardName;
-            }
+            CardUI newCard = Instantiate(cardPrefab.gameObject, cardParent).GetComponent<CardUI>();
+            newCard.Initialize(card);
         }
+        
     }
 }

@@ -9,6 +9,7 @@ public class PlayerState
     public CharacterType character;
     public List<ClueCard> cards;
     public RoomType currentRoom;
+    public bool isActive;
     // Start is called before the first frame update
 
     public PlayerState(int playerID, string playerName, CharacterType character)
@@ -16,5 +17,6 @@ public class PlayerState
         this.playerID = playerID;
         this.playerName = playerName;
         this.character = character;
+        isActive = true;
     }
 }
