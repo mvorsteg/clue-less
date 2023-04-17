@@ -15,6 +15,15 @@ public class GuestEngine : BaseEngine
     public override bool StartGame()
     {
         base.StartGame();
+        List<string> otherNames = new List<string>();
+        foreach (PlayerState otherPlayer in players.Values)
+        {
+            if (otherPlayer != null)
+            {
+                otherNames.Add(otherPlayer.playerName);
+            }
+        }
+        masterUI.StartGame(otherNames);
         return true;
     }
 
@@ -55,7 +64,7 @@ public class GuestEngine : BaseEngine
         if (players.TryAdd(playerID, new PlayerState(playerID, name, assignedCharacter)))
         {
             Log(String.Format("{0} Joined server as {1} (Assigned ID is {2})", name, assignedCharacter, playerID));
-            state = new GameState(players.Keys.Count);
+            state = new GameState(players.Keys.Count + 1);
             return true;
         }
         

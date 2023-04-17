@@ -6,6 +6,7 @@ public class MasterUI : MonoBehaviour
     public StatusUI statusUI;
     public CardsTabUI cardsUI;
     public BoardUI boardUI;
+    public ClueSheet clueSheetUI;
     public GuessUI guessUI;
     public RevealUI revealUI;
     public TurnUI turnUI;
@@ -13,6 +14,11 @@ public class MasterUI : MonoBehaviour
     public ActionUI actionUI;
     
     public GuestEngine engine;
+
+    public void StartGame(List<string> otherPlayers)
+    {
+        clueSheetUI.StartGame(otherPlayers);
+    }
 
     public void SetTurn(string player, TurnAction action, bool isActiveTurn)
     {
