@@ -12,6 +12,10 @@ public class HostEngine : BaseEngine
     public override bool StartGame()
     {
         base.StartGame();
+        foreach (ClueCard card in deck.GetCorrectCards())
+        {
+            Log("Correct card: " + card.cardName);
+        }
         // send cards to players
         int cardsPerPlayer = Mathf.CeilToInt((float)(deck.TotalCards - 3) / (float)state.numPlayers);
         int turn = UnityEngine.Random.Range(0, state.numPlayers);
@@ -105,6 +109,7 @@ public class HostEngine : BaseEngine
             }
         }
         players[playerID].character = newCharacter;
+        players[playerID].currentRoom = board.GetStartingRoom(newCharacter);
         Log(String.Format("Changed {0} to {1}", playerID, newCharacter));
         return true;
     }
@@ -127,7 +132,7 @@ public class HostEngine : BaseEngine
                     }
                     else
                     {
-                        EndTurn(playerID);
+                        SetTurn(state.turn, TurnAction.Idle);
                     }
                     Log(String.Format("Moved Client{0} to {1}", playerID, destRoom.ToString()));
                     return true;
@@ -266,9 +271,9 @@ public class HostEngine : BaseEngine
     {
         
         
-        if ((state.turn == userID && state.action == TurnAction.Idle) ||
-            (players.TryGetValue(userID, out PlayerState prevPlayerState) && !prevPlayerState.isActive))
-        {
+        // if ((state.turn == userID && state.action == TurnAction.Idle) ||
+        //     (players.TryGetValue(userID, out PlayerState prevPlayerState) && !prevPlayerState.isActive))
+        // {
             int nextTurn = (state.turn + 1) % state.numPlayers;
             if (players.TryGetValue(nextTurn, out PlayerState nextPlayerState) && !nextPlayerState.isActive)
             {
@@ -276,12 +281,12 @@ public class HostEngine : BaseEngine
             }
             SetTurn(nextTurn, TurnAction.MoveRoom);
             return true;
-        }
-        else
-        {
-            Log(String.Format("Player{0} cannot end their turn right now", userID));
-        }
-        return false;
+        // }
+        // else
+        // {
+        //     Log(String.Format("Player{0} cannot end their turn right now", userID));
+        // }
+        // return false;
     }
 
 }

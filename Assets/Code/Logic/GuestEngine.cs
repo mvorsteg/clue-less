@@ -32,7 +32,7 @@ public class GuestEngine : BaseEngine
         base.SetTurn(turn, action);
         if (player.playerID == turn)
         {
-            masterUI.SetTurn(player.playerName, action, true);
+            masterUI.SetTurn("You", action, true);
             Log(String.Format("It is your turn"));
             // if (action == TurnAction.MakeGuess)
             // {
@@ -48,6 +48,7 @@ public class GuestEngine : BaseEngine
     public void AssignFromServer(int playerID, string name, CharacterType assignedCharacter)
     {
         player = new PlayerState(playerID, name, assignedCharacter);
+        masterUI.SetCharacter(assignedCharacter);
         Log(String.Format("Joined server as {0} (Assigned ID is {1})", assignedCharacter, playerID));
     }
 
@@ -78,6 +79,7 @@ public class GuestEngine : BaseEngine
         if (playerID == ID)
         {
             player.character = newCharacter;
+            masterUI.SetCharacter(newCharacter);
             Log(String.Format("Changed character to {0}", newCharacter));
             return true;
         }

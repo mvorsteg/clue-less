@@ -53,6 +53,11 @@ public class CardDeck : MonoBehaviour
         return retList;
     }
 
+    public List<ClueCard> GetCorrectCards()
+    {
+        return new List<ClueCard>() { correctCharacter, correctRoom, correctWeapon };
+    }
+
     public bool IsCorrectGuess(CharacterType guessCharacter, WeaponType guessWeapon, RoomType guessRoom)
     {
         bool status = true;

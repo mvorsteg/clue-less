@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class GuessUI : MonoBehaviour
 {
     public Dropdown characterDropdown, weaponDropdown, roomDropdown;
-    public GameObject guessObj;
+    public GameObject guessObj, warningObj;
     private ClientNetworkInterface netInterface;
     private GuestEngine engine;
     
@@ -29,6 +29,7 @@ public class GuessUI : MonoBehaviour
         netInterface = FindObjectOfType<ClientNetworkInterface>();
         engine = FindObjectOfType<GuestEngine>();
         guessObj.SetActive(false);
+        warningObj.SetActive(false);
     }
 
     public void PromptGuess(bool isFinal, RoomType currentRoom)
@@ -57,7 +58,14 @@ public class GuessUI : MonoBehaviour
             roomDropdown.interactable = true;
         }
         this.isFinal = isFinal;
-        guessObj.SetActive(true);
+        if (!isFinal)
+        {
+            guessObj.SetActive(true);
+        }
+        else
+        {
+            warningObj.SetActive(true);
+        }
     }
 
     public void SubmitGuess()

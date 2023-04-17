@@ -15,9 +15,17 @@ public class MasterUI : MonoBehaviour
     
     public GuestEngine engine;
 
+    private CharacterType playerChar;
+
     public void StartGame(List<string> otherPlayers)
     {
         clueSheetUI.StartGame(otherPlayers);
+    }
+
+    public void SetCharacter(CharacterType newChar)
+    {
+        playerChar = newChar;
+        statusUI.SetCharacter(playerChar);
     }
 
     public void SetTurn(string player, TurnAction action, bool isActiveTurn)
@@ -39,6 +47,10 @@ public class MasterUI : MonoBehaviour
     public void MoveCharacterToRoom(CharacterType character, RoomType oldRoom, RoomType newRoom)
     {
         boardUI.MoveIconToNewRoom(character, oldRoom, newRoom);
+        if (character == playerChar)
+        {
+            statusUI.SetRoom(newRoom);
+        }
     }   
 
     public void DisableRoomSelection()
