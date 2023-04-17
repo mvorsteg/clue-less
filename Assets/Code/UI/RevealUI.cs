@@ -10,6 +10,7 @@ public class RevealUI : MonoBehaviour
     public CardUI cardPrefab;
     public CardUI receivedCardDisplay;
     public GameObject sendRevealScreen, receiveRevealScreen;
+    public Button revealActionButton;
     private ClientNetworkInterface netInterface;
     private GuestEngine engine;
 
@@ -66,6 +67,7 @@ public class RevealUI : MonoBehaviour
             return;
         }
         netInterface.SendMessage(pkt);
+        revealActionButton.interactable = false;
         sendRevealScreen.SetActive(false);
         for (int i = 0; i < sendCardParent.childCount; i++)
         {

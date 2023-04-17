@@ -66,6 +66,7 @@ public class HostEngine : BaseEngine
                 PlayerState newPlayer = new PlayerState(playerID, name, assignedCharacter);
                 if (players.TryAdd(playerID, newPlayer))
                 {
+                    newPlayer.currentRoom = board.GetStartingRoom(assignedCharacter);
                     state = new GameState(players.Keys.Count);
                     Log(string.Format("Adding player {0} to session", playerID));
                     return true;
@@ -149,12 +150,14 @@ public class HostEngine : BaseEngine
             {
                 if (state.turn == playerID && state.action == TurnAction.MakeGuess)
                 {
+                    GuessPacket outPkt = new GuessPacket(false, playerID, isFinal, character, weapon, room);
+                    netInterface.Broadcast(NetworkConstants.BROADCAST_ALL_CLIENTS, outPkt);
                     SetTurn(state.turn, TurnAction.RevealCards);
                     // sort out players that need to reveal
                     playersNeedToReveal.Clear();
                     foreach (PlayerState player in players.Values)
                     {
-                        if (player.playerID != playerID)
+                        if (player.playerID != playerID && player.isActive)
                         {
                             foreach (ClueCard card in player.cards)
                             {

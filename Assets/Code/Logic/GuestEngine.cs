@@ -87,12 +87,15 @@ public class GuestEngine : BaseEngine
         bool status = false;
         if (playerID == ID)
         {
+            masterUI.MoveCharacterToRoom(player.character, player.currentRoom, newRoom);
             player.currentRoom = newRoom;
+            masterUI.DisableRoomSelection();
             Log(String.Format("Moved to {0}", newRoom));
             status = true;
         }
         else if (players.TryGetValue(playerID, out PlayerState otherPlayer))
         {
+            masterUI.MoveCharacterToRoom(otherPlayer.character, otherPlayer.currentRoom, newRoom);
             otherPlayer.currentRoom = newRoom;
             Log(String.Format("{0} moved to {1}", otherPlayer.playerName, newRoom));
             status = true;

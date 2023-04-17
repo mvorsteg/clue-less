@@ -5,6 +5,21 @@ using UnityEngine.UI;
 public class ActionUI : MonoBehaviour
 {
     public Button moveButton, guessButton, revealButton, accuseButton, endButton;
+
+    public GuestEngine engine;
+
+
+    private void Start()
+    {
+        engine = FindObjectOfType<GuestEngine>();
+
+        moveButton.interactable = false;
+        guessButton.interactable = false;
+        revealButton.interactable = false;
+        accuseButton.interactable = false;
+        endButton.interactable = false;
+    }
+
     public void SetTurn(TurnAction action, bool isActiveTurn)
     {
         moveButton.interactable = false;
@@ -33,7 +48,7 @@ public class ActionUI : MonoBehaviour
             switch (action)
             {
                 case TurnAction.RevealCards :
-                    revealButton.interactable = true;
+                    revealButton.interactable = engine.GetCardsToReveal().Count > 0;
                     break;
             }
         }

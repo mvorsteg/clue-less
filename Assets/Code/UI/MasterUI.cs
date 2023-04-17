@@ -5,6 +5,7 @@ public class MasterUI : MonoBehaviour
 {
     public StatusUI statusUI;
     public CardsTabUI cardsUI;
+    public BoardUI boardUI;
     public GuessUI guessUI;
     public RevealUI revealUI;
     public TurnUI turnUI;
@@ -22,6 +23,21 @@ public class MasterUI : MonoBehaviour
     public void SetCards(List<ClueCard> cards)
     {
         cardsUI.SetCards(cards);
+    }
+
+    public void EnableMoveSelection()
+    {
+        boardUI.EnableMoveSelection(engine.player.currentRoom);
+    }
+
+    public void MoveCharacterToRoom(CharacterType character, RoomType oldRoom, RoomType newRoom)
+    {
+        boardUI.MoveIconToNewRoom(character, oldRoom, newRoom);
+    }   
+
+    public void DisableRoomSelection()
+    {
+        boardUI.DisableAllRooms();
     }
 
     public void PromptGuess(bool isFinal)
