@@ -13,6 +13,7 @@ public class PlayersTabUI : MonoBehaviour
 
     private bool isReady = false;
     public Text readyButtonText;
+    public Button charButton, readyButton; 
 
     public GuestEngine engine;
     public ClientNetworkInterface netInterface;
@@ -33,7 +34,14 @@ public class PlayersTabUI : MonoBehaviour
     public void AddPlayer(int playerID, CharacterType character, string name)
     {
         PlayerStatusUI newEntry = Instantiate(playerEntryPrefab, playerEntryParent).GetComponent<PlayerStatusUI>();
-        newEntry.SetName(name);
+        if (playerID == engine.ID)
+        {
+            newEntry.SetName(name + " (you)");
+        }
+        else
+        {
+            newEntry.SetName(name);
+        }
 
         entries.Add(playerID, newEntry);
 
@@ -80,6 +88,12 @@ public class PlayersTabUI : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void GameStart()
+    {
+        charButton.interactable = false;
+        readyButton.interactable = false;
     }
 
     public void ReadyButtonClick()

@@ -48,6 +48,67 @@ public class GuestEngine : BaseEngine
         {
             masterUI.SetTurn(player.playerName, action, false);
         }
+
+        // update player status
+        PlayerStatus activeStatus, waitingStatus;
+        switch (action)
+        {
+            case TurnAction.MoveRoom :
+            {
+                activeStatus = PlayerStatus.Moving;
+                waitingStatus = PlayerStatus.Waiting;
+                break;
+            }
+            case TurnAction.MakeGuess :
+            {
+                activeStatus = PlayerStatus.Guessing;
+                waitingStatus = PlayerStatus.Waiting;
+                break;
+            }
+            case TurnAction.RevealCards :
+            {
+                activeStatus = PlayerStatus.Waiting;
+                waitingStatus = PlayerStatus.Revealing;
+                break;
+            }
+            case TurnAction.Idle :
+            {
+                activeStatus = PlayerStatus.EndingTurn;
+                waitingStatus = PlayerStatus.Waiting;
+                break;
+            }
+            default :
+            {
+                // should never get here but compiler complains otherwise
+                activeStatus = PlayerStatus.NotReady;
+                waitingStatus = PlayerStatus.NotReady;
+                break;
+            }
+        }
+
+        if (turn == ID)
+        {
+            masterUI.UpdatePlayerStatus(ID, waitingStatus);
+        }
+        else
+        {
+            masterUI.UpdatePlayerStatus(ID, activeStatus);
+        }
+
+        foreach (PlayerState otherPlayer in players.Values)
+        {
+            if (otherPlayer.isActive)
+            {
+                if (turn == otherPlayer.playerID)
+                {
+                    masterUI.UpdatePlayerStatus(otherPlayer.playerID, waitingStatus);
+                }
+                else
+                {
+                    masterUI.UpdatePlayerStatus(otherPlayer.playerID, activeStatus);
+                }
+            }
+        }
     }
 
     public void AssignFromServer(int playerID, string name, CharacterType assignedCharacter)
