@@ -24,6 +24,11 @@ public class BaseEngine : MonoBehaviour
         return true;
     }
 
+    public virtual void SetPlayerReady(int playerID, bool isReady)
+    {
+        
+    }
+
     public virtual void SetTurn(int turn, TurnAction action)
     {
         if (state.turn != turn)

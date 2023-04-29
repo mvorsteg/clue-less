@@ -43,6 +43,27 @@ public class HostEngine : BaseEngine
         return true;        
     }
 
+    public override void SetPlayerReady(int playerID, bool isReady)
+    {
+        if (players.TryGetValue(playerID, out PlayerState selectedPlayer))
+        {
+            selectedPlayer.isReady = isReady;
+            ReadyPacket pkt = new ReadyPacket(false, playerID, isReady);
+            netInterface.Broadcast(NetworkConstants.BROADCAST_ALL_CLIENTS, pkt);
+            Log(String.Format("Player{0} is now {1}", playerID, isReady ? "ready" : "not ready"));
+        }
+
+        // check if all players are ready- if so, start the game
+        foreach (PlayerState player in players.Values)
+        {
+            if (!player.isReady)
+            {
+                return;
+            }
+        }
+        StartGame();
+    }
+
     public override void SetTurn(int turn, TurnAction action)
     {
         base.SetTurn(turn, action);

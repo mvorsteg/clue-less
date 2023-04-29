@@ -109,6 +109,12 @@ public class ClientNetworkInterface : BaseNetworkInterface
                 guestEngine.AddPlayer(pkt.assignedId, pkt.userName, pkt.assignedCharacter);
                 break;
             }
+            case MessageIDs.Ready_ToClient :
+            {
+                ReadyPacket pkt = new ReadyPacket(buffer);
+                guestEngine.SetPlayerReady(pkt.userID, pkt.ready);
+                break;
+            }
             case MessageIDs.Disconnect_ToClient :
 
                 break;

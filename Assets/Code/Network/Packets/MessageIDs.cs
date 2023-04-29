@@ -7,6 +7,7 @@ public enum MessageIDs
 
     Connect_ToServer,                   // sent to server when player wants to connect
     Disconnect_ToServer,                // sent to server when player is leaving
+    Ready_ToServer,                     // sent to server when player is ready to start
     Chat_ToServer,                      // sent to server when player sends a chat message
     GameStart_ToServer,                 // sent to server when player is ready to start the game
     CharUpdate_ToServer,                // sent to server when player changes character/color
@@ -25,6 +26,7 @@ public enum MessageIDs
     ConnectForward_ToClient,            // sent to all other clients when a new player joins
     Disconnect_ToClient,                // sent to 1 client if forcibly removed from server
     ClientDrop_ToClient,                // sent to all clients when a client leaves the server
+    Ready_ToClient,                     // sent to all other clients when a player is ready to start 
     Chat_ToClient,                      // sent to all clients when a player sends a chat message
     GameStart_ToClient,                 // sent to all clients when host starts game 
     Turn_ToClient,                      // sent to all clients when an action occurs that changes the turn or action
@@ -32,7 +34,7 @@ public enum MessageIDs
     MoveToRoom_ToClient,                // sent to all clients when a player moves to a new room
     Guess_ToClient,                     // sent to all clients when player makes a guess
     Reveal_ToClient,                    // sent to 1 client when a player responds to guess with a clue
-    WinLose_ToClient,                       // sent to all clients when a player wins or loses the game
+    WinLose_ToClient,                   // sent to all clients when a player wins or loses the game
 
     #endregion
 }

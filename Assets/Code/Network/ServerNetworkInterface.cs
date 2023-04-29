@@ -173,6 +173,12 @@ public class ServerNetworkInterface : BaseNetworkInterface
             {
                 break;
             }
+            case MessageIDs.Ready_ToServer :
+            {
+                ReadyPacket pkt = new ReadyPacket(buffer);
+                hostEngine.SetPlayerReady(pkt.userID, pkt.ready);
+                break;
+            }
             case MessageIDs.GameStart_ToServer :
             {
                 GameStartPacket pkt = new GameStartPacket(buffer);

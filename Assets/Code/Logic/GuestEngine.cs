@@ -27,6 +27,11 @@ public class GuestEngine : BaseEngine
         return true;
     }
 
+    public override void SetPlayerReady(int playerID, bool isReady)
+    {
+        masterUI.UpdatePlayerStatus(playerID, isReady ? PlayerStatus.Ready : PlayerStatus.NotReady);
+    }
+
     public override void SetTurn(int turn, TurnAction action)
     {
         base.SetTurn(turn, action);
@@ -49,6 +54,7 @@ public class GuestEngine : BaseEngine
     {
         player = new PlayerState(playerID, name, assignedCharacter);
         masterUI.SetCharacter(assignedCharacter);
+        masterUI.AddPlayer(playerID, assignedCharacter, name);
         Log(String.Format("Joined server as {0} (Assigned ID is {1})", assignedCharacter, playerID));
     }
 
@@ -64,6 +70,8 @@ public class GuestEngine : BaseEngine
     {
         if (players.TryAdd(playerID, new PlayerState(playerID, name, assignedCharacter)))
         {
+            masterUI.AddPlayer(playerID, assignedCharacter, name);
+
             Log(String.Format("{0} Joined server as {1} (Assigned ID is {2})", name, assignedCharacter, playerID));
             state = new GameState(players.Keys.Count + 1);
             return true;
@@ -76,16 +84,21 @@ public class GuestEngine : BaseEngine
 
     public bool UpdateCharacter(int playerID, CharacterType newCharacter)
     {
+        CharacterType oldCharacter;
         if (playerID == ID)
         {
+            oldCharacter = player.character;
             player.character = newCharacter;
             masterUI.SetCharacter(newCharacter);
+            masterUI.UpdatePlayerCharacter(playerID, newCharacter, oldCharacter);
             Log(String.Format("Changed character to {0}", newCharacter));
             return true;
         }
         else if (players.TryGetValue(playerID, out PlayerState otherPlayer))
         {
+            oldCharacter = otherPlayer.character;
             otherPlayer.character = newCharacter;
+            masterUI.UpdatePlayerCharacter(playerID, newCharacter, oldCharacter);
             Log(String.Format("{0} changed character to {1}", otherPlayer.playerName, newCharacter));
             return true;
         }
@@ -219,6 +232,7 @@ public class GuestEngine : BaseEngine
         {
             masterUI.NotifyWinLose(otherPlayer.playerName, true);
         }
+        masterUI.UpdatePlayerStatus(playerID, PlayerStatus.Won);
     }
 
     public void Lose(int playerID)
@@ -232,5 +246,6 @@ public class GuestEngine : BaseEngine
         {
             masterUI.NotifyWinLose(otherPlayer.playerName, false);
         }
+        masterUI.UpdatePlayerStatus(playerID, PlayerStatus.Lost);
     }
 }
