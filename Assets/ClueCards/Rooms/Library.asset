@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 2
   cardName: Library
+  sprite: {fileID: 21300000, guid: 24303072873197a4ead35f6d6ca433ce, type: 3}

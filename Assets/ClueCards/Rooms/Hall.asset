@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 2
   cardName: Hall
+  sprite: {fileID: 21300000, guid: 0ac42cc389f22f94da035c17ce154405, type: 3}

@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 1
   cardName: Prof. Plum
+  sprite: {fileID: 21300000, guid: d1266765187c38742af5c8bf540a1eac, type: 3}

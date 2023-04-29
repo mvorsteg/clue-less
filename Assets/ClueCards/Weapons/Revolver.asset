@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 0
   cardName: Revolver
+  sprite: {fileID: 21300000, guid: 5e563179842c6964087e73043b072e85, type: 3}

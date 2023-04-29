@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 2
   cardName: Study
+  sprite: {fileID: 21300000, guid: 5af2fa39bb9d9de4bb7426fc83bb1779, type: 3}

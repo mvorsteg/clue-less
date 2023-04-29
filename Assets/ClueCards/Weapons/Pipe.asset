@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 0
   cardName: Pipe
+  sprite: {fileID: 21300000, guid: a81f840c7e8c4314fb0cf5e0c8d216ea, type: 3}

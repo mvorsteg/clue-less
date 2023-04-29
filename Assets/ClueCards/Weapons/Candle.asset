@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 0
   cardName: Candle
+  sprite: {fileID: 21300000, guid: c75bac2b451554c469375e6d4910ba05, type: 3}

@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 1
   cardName: Col. Mustard
+  sprite: {fileID: 21300000, guid: ac90e49adb185714b83bd449d66c5829, type: 3}

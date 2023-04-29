@@ -1,11 +1,13 @@
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "ClueCard", menuName = "")]
 public class ClueCard : ScriptableObject
 {
     public ClueType type;
     public string cardName;
+    public Sprite sprite;
 
     public bool TryGetCharacterType(out CharacterType character)
     {

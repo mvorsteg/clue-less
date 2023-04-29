@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 2
   cardName: Billiard Room
+  sprite: {fileID: 21300000, guid: 4d9dd804126f5a445869ada31b791e60, type: 3}

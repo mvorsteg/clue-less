@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 0
   cardName: Wrench
+  sprite: {fileID: 21300000, guid: 26cecfae93107344585b9cf03541dbf1, type: 3}

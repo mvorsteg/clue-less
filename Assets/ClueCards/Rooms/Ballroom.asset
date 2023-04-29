@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 2
   cardName: Ballroom
+  sprite: {fileID: 21300000, guid: 79b80ea1c35293c45b19a4e670c82091, type: 3}

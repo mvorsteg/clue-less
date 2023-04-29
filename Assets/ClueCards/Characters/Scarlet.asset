@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 1
   cardName: Ms. Scarlet
+  sprite: {fileID: 21300000, guid: 35effa31c88f3b84189aa15d980499d6, type: 3}

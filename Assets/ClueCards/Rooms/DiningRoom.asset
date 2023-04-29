@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 2
   cardName: Dining Room
+  sprite: {fileID: 21300000, guid: 433f1813ddc792d449c8e2323d6332d1, type: 3}

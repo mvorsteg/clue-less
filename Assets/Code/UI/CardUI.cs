@@ -10,6 +10,9 @@ public class CardUI : MonoBehaviour
     public void Initialize(ClueCard card)
     {
         text.text = card.cardName;
-        // image will be set later
+        if (card.sprite != null)
+        {
+            image.sprite = card.sprite;
+        }
     }
 }

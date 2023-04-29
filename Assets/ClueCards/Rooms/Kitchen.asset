@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 2
   cardName: Kitchen
+  sprite: {fileID: 21300000, guid: ebf48c63fd90c734e9e211cc458b20f9, type: 3}

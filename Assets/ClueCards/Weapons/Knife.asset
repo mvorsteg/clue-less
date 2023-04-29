@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 0
   cardName: Knife
+  sprite: {fileID: 21300000, guid: 715067bc91f833a4ab493b8f67155df0, type: 3}

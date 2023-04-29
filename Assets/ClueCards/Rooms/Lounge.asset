@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 2
   cardName: Lounge
+  sprite: {fileID: 21300000, guid: 600149fbfca80104cb1a3583dffb071b, type: 3}

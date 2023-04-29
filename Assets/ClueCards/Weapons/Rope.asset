@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   type: 0
   cardName: Rope
+  sprite: {fileID: 21300000, guid: 8701e91d34a4b8640818cba2f42ea615, type: 3}
