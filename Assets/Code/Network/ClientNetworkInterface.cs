@@ -140,6 +140,7 @@ public class ClientNetworkInterface : BaseNetworkInterface
                 ChatPacket pkt = new ChatPacket(buffer);
                 if (pkt.senderID != clientID)
                 {
+                    guestEngine.ProcessChatMessage(pkt.senderID, pkt.message);
                     Log(String.Format("{0} sent chat \"{1}\"", guestEngine.GetPlayerName(pkt.senderID), pkt.message));
                 }
                 break;

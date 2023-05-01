@@ -28,6 +28,7 @@ public class ServerNetworkInterface : BaseNetworkInterface
     public override void Initialize(IPAddress ipAddress, int portNum, BaseEngine engine, ConsoleLogger logger, string processName)
     {
         base.Initialize(ipAddress, portNum, engine, logger, processName);
+        logger.ShowDebugMessages(true);
         hostEngine = (HostEngine)engine;
         
         // listen for incoming connections on new thread

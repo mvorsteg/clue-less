@@ -32,13 +32,13 @@ public class ClientConsole : MonoBehaviour
                 //     netInterface.Initialize(engine, logger);
                 //     break;
                 // }
-                case ("start"):
+                case ("\\start"):
                 {
                     GameStartPacket pkt = new GameStartPacket(true, engine.ID);
                     clientInterface.SendMessage(pkt);
                     break;
                 }
-                case ("char"):
+                case ("\\char"):
                 {
                     string charStr = tokens[1];
                     if (Enum.TryParse<CharacterType>(charStr, true, out CharacterType charEnum))
@@ -48,15 +48,7 @@ public class ClientConsole : MonoBehaviour
                     }
                     break;
                 }
-                case ("chat"):
-                {
-                    string text = string.Join(" ", tokens.Skip(1).ToList<string>());
-                    logger.Log(text, SubsystemType.UI);
-                    ChatPacket pkt = new ChatPacket(true, engine.ID, text);
-                    clientInterface.SendMessage(pkt);
-                    break;
-                }
-                case ("move"):
+                case ("\\move"):
                 {
                     string roomStr = tokens[1];
                     if (Enum.TryParse<RoomType>(roomStr, true, out RoomType roomEnum))
@@ -66,7 +58,7 @@ public class ClientConsole : MonoBehaviour
                     }
                     break;
                 }
-                case ("guess"):
+                case ("\\guess"):
                 {
                     string charStr = tokens[1];
                     string weaponStr = tokens[2];
@@ -80,7 +72,7 @@ public class ClientConsole : MonoBehaviour
                     }
                     break;
                 }
-                case ("accusation"):
+                case ("\\accusation"):
                 {
                     string charStr = tokens[1];
                     string weaponStr = tokens[2];
@@ -94,7 +86,7 @@ public class ClientConsole : MonoBehaviour
                     }
                     break;
                 }
-                case ("reveal"):
+                case ("\\reveal"):
                 {
                     string cardStr = tokens[1];
                     RevealPacket pkt;
@@ -119,15 +111,26 @@ public class ClientConsole : MonoBehaviour
                     clientInterface.SendMessage(pkt);
                     break;
                 }
-                case ("done"):
+                case ("\\done"):
                 {
                     TurnDonePacket pkt = new TurnDonePacket(engine.ID);
                     clientInterface.SendMessage(pkt);
                     break;
                 }
+                case ("\\chat"):
+                {
+                    string text = string.Join(" ", tokens.Skip(1).ToList<string>());
+                    logger.Log(text, SubsystemType.UI);
+                    ChatPacket pkt = new ChatPacket(true, engine.ID, text);
+                    clientInterface.SendMessage(pkt);
+                    break;
+                }
                 default:
                 {
-                    Log(String.Format("Unrecognized command {0}", tokens[0]));
+                    string text = string.Join(" ", tokens.ToList<string>());
+                    logger.LogChat(String.Format("[{0}] {1}", engine.player.playerName, text));
+                    ChatPacket pkt = new ChatPacket(true, engine.ID, text);
+                    clientInterface.SendMessage(pkt);
                     break;
                 }
             }

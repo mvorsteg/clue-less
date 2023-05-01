@@ -32,6 +32,15 @@ public class GuestEngine : BaseEngine
         masterUI.UpdatePlayerStatus(playerID, isReady ? PlayerStatus.Ready : PlayerStatus.NotReady);
     }
 
+    public void ProcessChatMessage(int playerID, string message)
+    {
+        if (logger != null)
+        {
+            string formattedMessage = String.Format("[{0}] {1}", GetPlayerName(playerID), message);
+            logger.LogChat(formattedMessage);
+        }
+    }
+
     public override void SetTurn(int turn, TurnAction action)
     {
         base.SetTurn(turn, action);
