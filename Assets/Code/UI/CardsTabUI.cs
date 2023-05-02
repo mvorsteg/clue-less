@@ -16,6 +16,7 @@ public class CardsTabUI : MonoBehaviour
     {
         foreach (ClueCard card in cards)
         {
+            cardPrefab.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
             CardUI newCard = Instantiate(cardPrefab.gameObject, cardParent).GetComponent<CardUI>();
             newCard.Initialize(card);
         }

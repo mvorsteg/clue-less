@@ -1,10 +1,25 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class StatusUI : MonoBehaviour
 {
     public Text turnText, characterText, roomText;
+    public GameObject cardIcon;
+    public List<CharacterSpriteMapping> spriteMappings;
+    private Dictionary<CharacterType, Sprite> characterIcons;
+
+    private void Awake() {
+        characterIcons = new Dictionary<CharacterType, Sprite>();
+        foreach (CharacterSpriteMapping mapping in spriteMappings)
+        {
+            if (!characterIcons.TryAdd(mapping.character, mapping.sprite))
+            {
+                // uhh error
+            }
+        }
+    }
 
     public void SetTurn(string player, TurnAction action)
     {
@@ -43,6 +58,10 @@ public class StatusUI : MonoBehaviour
     public void SetCharacter(CharacterType character)
     {
         characterText.text = String.Format("You are {0}", character.ToString());
+        if (characterIcons.TryGetValue(character, out Sprite sprite))
+        {
+            cardIcon.GetComponent<Image>().sprite = sprite;
+        }
     }
 
     public void SetRoom(RoomType room)
