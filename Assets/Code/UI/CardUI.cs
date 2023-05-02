@@ -13,6 +13,7 @@ public class CardUI : MonoBehaviour
         if (card.sprite != null)
         {
             image.sprite = card.sprite;
+            image.preserveAspect = true;
         }
     }
 }
