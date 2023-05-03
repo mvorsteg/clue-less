@@ -7,6 +7,7 @@ public class ClueSheet : MonoBehaviour
 {
     public Transform clueLabelParent, playerLabelParent;
     public GameObject[] columns;
+    public GameObject initialScreen;
 
     private bool initialized = false;
     
@@ -53,6 +54,7 @@ public class ClueSheet : MonoBehaviour
 
     public void StartGame(List<string> otherPlayers)
     {
+        initialScreen.SetActive(false);
         // quick and dirty fix to get around initialization issue (if StartGame called before Start we disable all cols)
         if (!initialized)
         {
