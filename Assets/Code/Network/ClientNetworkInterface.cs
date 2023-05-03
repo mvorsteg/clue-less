@@ -116,8 +116,11 @@ public class ClientNetworkInterface : BaseNetworkInterface
                 break;
             }
             case MessageIDs.Disconnect_ToClient :
-
+            {
+                DisconnectPacket pkt = new DisconnectPacket(buffer);
+                guestEngine.RemovePlayer(pkt.userID);
                 break;
+            }
             case MessageIDs.GameStart_ToClient :
             {
                 GameStartPacket pkt = new GameStartPacket(buffer);
@@ -171,14 +174,22 @@ public class ClientNetworkInterface : BaseNetworkInterface
             }
             case MessageIDs.WinLose_ToClient :
             {
-                WinLosePacket pkt = new WinLosePacket(buffer);
-                if (pkt.win)
+                GameOverPacket pkt = new GameOverPacket(buffer);
+                if (pkt.type == GameOverType.Win)
                 {
                     guestEngine.Win(pkt.userID);
                 }
-                else
+                else if (pkt.type == GameOverType.Lose)
                 {
                     guestEngine.Lose(pkt.userID);
+                }
+                else if (pkt.type == GameOverType.Error)
+                {
+                    guestEngine.ErrorOut();
+                }
+                else
+                {
+                    Log(String.Format("Unrecognized GameOverType {0}", pkt.type));
                 }
                 break;
             }

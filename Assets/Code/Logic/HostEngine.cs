@@ -106,6 +106,35 @@ public class HostEngine : BaseEngine
         return false;
     }
 
+    public override bool RemovePlayer(int playerID)
+    {
+        if (!isGameStarted)
+        {
+            if (players.TryGetValue(playerID, out PlayerState player))
+            {
+                players.Remove(playerID);
+                
+                DisconnectPacket pkt = new DisconnectPacket(playerID);
+                netInterface.Broadcast(playerID, pkt);
+                
+                Log(String.Format("Removed {0} (player {1})", player.playerName, playerID));
+                return true;
+            }
+            else
+            {
+                Log(String.Format("Failed to remove player {0}", playerID));
+                return false;
+            }
+        }
+        else
+        {
+            GameOverPacket pkt = new GameOverPacket(playerID, GameOverType.Error);
+            netInterface.Broadcast(playerID, pkt);
+            Log("Cannot remove player, game has already started");
+            return true;
+        }
+    }
+
     public List<Tuple<int, string, CharacterType>> GetAllPlayerInfo()
     {
         List<Tuple<int, string, CharacterType>> allPlayerList = new List<Tuple<int, string, CharacterType>>();
@@ -215,14 +244,14 @@ public class HostEngine : BaseEngine
                     if (deck.IsCorrectGuess(character, weapon, room))
                     {
                         // win
-                        WinLosePacket pkt = new WinLosePacket(playerID, true);
+                        GameOverPacket pkt = new GameOverPacket(playerID, GameOverType.Win);
                         netInterface.Broadcast(NetworkConstants.BROADCAST_ALL_CLIENTS, pkt);
                     }
                     else
                     {
                         // lose
                         playerState.isActive = false;
-                        WinLosePacket pkt = new WinLosePacket(playerID, false);
+                        GameOverPacket pkt = new GameOverPacket(playerID, GameOverType.Lose);
                         netInterface.Broadcast(NetworkConstants.BROADCAST_ALL_CLIENTS, pkt);
                         EndTurn(playerID);
                     }

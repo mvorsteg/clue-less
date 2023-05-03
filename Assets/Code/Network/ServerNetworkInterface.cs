@@ -28,8 +28,8 @@ public class ServerNetworkInterface : BaseNetworkInterface
     public override void Initialize(IPAddress ipAddress, int portNum, BaseEngine engine, ConsoleLogger logger, string processName)
     {
         base.Initialize(ipAddress, portNum, engine, logger, processName);
-        logger.ShowDebugMessages(true);
         hostEngine = (HostEngine)engine;
+        logger.ShowDebugMessages(true);
         
         // listen for incoming connections on new thread
         tcpListener = new TcpListener(IPAddress.Any, portNum);
@@ -58,9 +58,10 @@ public class ServerNetworkInterface : BaseNetworkInterface
         }
     }
 
-    public void DisconnectPlayer(int id)
+    public override void DisconnectPlayer(int id)
     {
         connectedPlayers[id] = null;
+        hostEngine.RemovePlayer(id);
     }
 
     public void SendMessage(int clientID, INetworkPacket pkt)
