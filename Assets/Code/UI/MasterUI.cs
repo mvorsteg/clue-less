@@ -22,6 +22,7 @@ public class MasterUI : MonoBehaviour
     public void StartGame(List<string> otherPlayers)
     {
         clueSheetUI.StartGame(otherPlayers);
+        playersUI.StartGame();
     }
 
     public void AddPlayer(int playerID, CharacterType startingCharacter, string name)

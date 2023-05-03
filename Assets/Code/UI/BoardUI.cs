@@ -32,7 +32,7 @@ public class BoardUI : MonoBehaviour
     {
         foreach (BoardRoom room in rooms)
         {
-            room.GetComponent<Button>().interactable = false;
+            room.Interactable = false;
         }
     }
 
@@ -41,10 +41,9 @@ public class BoardUI : MonoBehaviour
         DisableAllRooms();
         foreach (BoardRoom room in rooms)
         {
-            Button roomButton = room.GetComponent<Button>();
             if (board.IsValidMove(startingRoom, room.type))
             {
-                roomButton.interactable = true;
+                room.Interactable = true;
             }
         }
     }

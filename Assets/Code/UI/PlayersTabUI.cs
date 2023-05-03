@@ -31,6 +31,12 @@ public class PlayersTabUI : MonoBehaviour
         SetReady(false);
     }
 
+    public void StartGame()
+    {
+        charButton.interactable = false;
+        readyButton.interactable = false;
+    }
+
     public void AddPlayer(int playerID, CharacterType character, string name)
     {
         PlayerStatusUI newEntry = Instantiate(playerEntryPrefab, playerEntryParent).GetComponent<PlayerStatusUI>();
