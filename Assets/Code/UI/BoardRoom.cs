@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BoardRoom : MonoBehaviour
 {
@@ -6,6 +7,19 @@ public class BoardRoom : MonoBehaviour
     public GameObject[] characterIcons;
     private ClientNetworkInterface netInterface;
     private GuestEngine engine;
+
+    public bool Interactable
+    {
+        set
+        {
+            GetComponent<Button>().interactable = value;
+        }
+    }
+
+    private void Awake()
+    {
+        
+    }
 
     private void Start()
     {
@@ -16,6 +30,7 @@ public class BoardRoom : MonoBehaviour
         {
             icon.SetActive(false);
         }
+        
     }
 
     public void OnRoomClicked()
