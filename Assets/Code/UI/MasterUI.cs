@@ -12,7 +12,7 @@ public class MasterUI : MonoBehaviour
     public GuessUI guessUI;
     public RevealUI revealUI;
     public TurnUI turnUI;
-    public WinLoseUI winLoseUI;
+    public GameOverUI gameOverUI;
     public ActionUI actionUI;
     
     public GuestEngine engine;
@@ -29,6 +29,12 @@ public class MasterUI : MonoBehaviour
     {
         playersUI.AddPlayer(playerID, startingCharacter, name);
         charUpdateUI.UpdateChoices(startingCharacter, false);
+    }
+
+    public void RemovePlayer(int playerID, CharacterType freeCharacter)
+    {
+        playersUI.RemovePlayer(playerID);
+        charUpdateUI.UpdateChoices(freeCharacter, true);
     }
 
     public void UpdatePlayerCharacter(int playerID, CharacterType newCharacter, CharacterType oldCharacter)
@@ -99,8 +105,8 @@ public class MasterUI : MonoBehaviour
         turnUI.PromptEndTurn();
     }
 
-    public void NotifyWinLose(string player, bool win)
+    public void NotifyGameOver(string player, GameOverType type)
     {
-        winLoseUI.NotifyWinLose(player, win);
+        gameOverUI.NotifyGameOver(player, type);
     }
 }

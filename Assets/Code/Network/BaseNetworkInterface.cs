@@ -44,6 +44,11 @@ public class BaseNetworkInterface : MonoBehaviour
         isConnected = false;
     }
 
+    public virtual void DisconnectPlayer(int playerID)
+    {
+        // do nothing in base class
+    }
+
     public void EnqueueMessage(int playerID, MessageIDs messageID, byte[] buffer)
     {
         messageQueue.Enqueue(new Tuple<int, MessageIDs, byte[]>(playerID, messageID, buffer));

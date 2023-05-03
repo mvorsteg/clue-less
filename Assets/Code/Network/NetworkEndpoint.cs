@@ -97,6 +97,7 @@ public class NetworkEndpoint
                 netInterface.Log(e.Message);
             }
         }
+        netInterface.DisconnectPlayer(id);
     }
      
 }

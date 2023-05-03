@@ -11,6 +11,8 @@ public class BaseEngine : MonoBehaviour
     public CardDeck deck;
     public ConsoleLogger logger;    
 
+    public bool isGameStarted = false;
+
     protected virtual void Awake()
     {
         players = new Dictionary<int, PlayerState>();
@@ -21,6 +23,7 @@ public class BaseEngine : MonoBehaviour
     {
         state = new GameState(players.Keys.Count);
         deck.Initialize();
+        isGameStarted = true;
         return true;
     }
 
@@ -45,6 +48,11 @@ public class BaseEngine : MonoBehaviour
     public virtual bool AddPlayer(int playerID, string name, CharacterType assignedCharacter)
     {
         // intentionally blank for now
+        return false;
+    }
+
+    public virtual bool RemovePlayer(int playerID)
+    {
         return false;
     }
 

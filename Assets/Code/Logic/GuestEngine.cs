@@ -152,6 +152,34 @@ public class GuestEngine : BaseEngine
         return false;
     }
 
+    public override bool RemovePlayer(int playerID)
+    {
+        if (!isGameStarted)
+        {
+            if (players.TryGetValue(playerID, out PlayerState player))
+            {
+                players.Remove(playerID);
+                
+                masterUI.RemovePlayer(playerID, player.character);
+                state = new GameState(players.Keys.Count + 1);
+
+                SetPlayerReady(ID, false);
+
+                Log(String.Format("Removed {0} (player {1})", player.playerName, playerID));
+                return true;
+            }
+            else
+            {
+                Log(String.Format("Failed to remove player {0}", playerID));
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     public bool UpdateCharacter(int playerID, CharacterType newCharacter)
     {
         CharacterType oldCharacter;
@@ -296,11 +324,11 @@ public class GuestEngine : BaseEngine
     {
         if (playerID == ID)
         {
-            masterUI.NotifyWinLose("You", true);
+            masterUI.NotifyGameOver("You", GameOverType.Win);
         }
         else if (players.TryGetValue(playerID, out PlayerState otherPlayer))
         {
-            masterUI.NotifyWinLose(otherPlayer.playerName, true);
+            masterUI.NotifyGameOver(otherPlayer.playerName, GameOverType.Win);
         }
         masterUI.UpdatePlayerStatus(playerID, PlayerStatus.Won);
     }
@@ -310,12 +338,17 @@ public class GuestEngine : BaseEngine
         player.isActive = false;
         if (playerID == ID)
         {
-            masterUI.NotifyWinLose("You", false);
+            masterUI.NotifyGameOver("You", GameOverType.Lose);
         }
         else if (players.TryGetValue(playerID, out PlayerState otherPlayer))
         {
-            masterUI.NotifyWinLose(otherPlayer.playerName, false);
+            masterUI.NotifyGameOver(otherPlayer.playerName, GameOverType.Lose);
         }
         masterUI.UpdatePlayerStatus(playerID, PlayerStatus.Lost);
+    }
+
+    public void ErrorOut()
+    {
+       masterUI.NotifyGameOver("", GameOverType.Error); 
     }
 }

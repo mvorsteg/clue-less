@@ -55,6 +55,16 @@ public class PlayersTabUI : MonoBehaviour
         SetStatus(playerID, PlayerStatus.NotReady);
     }
 
+    public void RemovePlayer(int playerID)
+    {
+        if (entries.TryGetValue(playerID, out PlayerStatusUI oldEntry))
+        {
+            entries.Remove(playerID);
+
+            Destroy(oldEntry.gameObject);
+        }
+    }
+
     public void SetCharacter(int playerID, CharacterType character)
     {
         if (entries.TryGetValue(playerID, out PlayerStatusUI entry))
