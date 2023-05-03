@@ -6,10 +6,16 @@ public class CardsTabUI : MonoBehaviour
 {
     public Transform cardParent;
     public CardUI cardPrefab;
+    public GameObject initialScreen;
 
     private void Start()
     {
         
+    }
+
+    public void StartGame()
+    {
+        initialScreen.SetActive(false);
     }
 
     public void SetCards(List<ClueCard> cards)
