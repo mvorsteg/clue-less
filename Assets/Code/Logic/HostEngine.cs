@@ -25,7 +25,7 @@ public class HostEngine : BaseEngine
             player.cards = deck.GetCards(cardsPerPlayer);
 
             RoomType initialRoom = board.GetStartingRoom(player.character);
-            MoveToRoomPacket roomPkt = new MoveToRoomPacket(false, player.playerID, initialRoom);
+            MoveToRoomPacket roomPkt = new MoveToRoomPacket(false, player.playerID, initialRoom, false);
             netInterface.Broadcast(NetworkConstants.BROADCAST_ALL_CLIENTS, roomPkt);
         }
         foreach (PlayerState player in players.Values)
@@ -173,7 +173,7 @@ public class HostEngine : BaseEngine
             {
                 // do move
                 playerState.currentRoom = destRoom;
-                MoveToRoomPacket outPkt = new MoveToRoomPacket(false, playerID, destRoom);
+                MoveToRoomPacket outPkt = new MoveToRoomPacket(false, playerID, destRoom, true);
                 netInterface.Broadcast(NetworkConstants.BROADCAST_ALL_CLIENTS, outPkt);
             }
             else if (state.turn == playerID && state.action == TurnAction.MoveRoom)
@@ -182,7 +182,7 @@ public class HostEngine : BaseEngine
                 {
                     // do move
                     playerState.currentRoom = destRoom;
-                    MoveToRoomPacket outPkt = new MoveToRoomPacket(false, playerID, destRoom);
+                    MoveToRoomPacket outPkt = new MoveToRoomPacket(false, playerID, destRoom, false);
                     netInterface.Broadcast(NetworkConstants.BROADCAST_ALL_CLIENTS, outPkt);
                     if (board.IsGuessRoom(playerState.currentRoom))
                     {
@@ -242,7 +242,7 @@ public class HostEngine : BaseEngine
                     // also must move a player if their character was guessed!!!
                     foreach (PlayerState player in players.Values)
                     {
-                        if (player != null && player.character == character)
+                        if (player != null && player.playerID != playerID && player.character == character)
                         {
                             MovePlayer(player.playerID, room, true);
                         }

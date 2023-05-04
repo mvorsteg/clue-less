@@ -53,7 +53,7 @@ public class ClientConsole : MonoBehaviour
                     string roomStr = tokens[1];
                     if (Enum.TryParse<RoomType>(roomStr, true, out RoomType roomEnum))
                     {
-                        MoveToRoomPacket pkt = new MoveToRoomPacket(true, engine.ID, roomEnum);
+                        MoveToRoomPacket pkt = new MoveToRoomPacket(true, engine.ID, roomEnum, false);
                         clientInterface.SendMessage(pkt);
                     }
                     break;

@@ -70,7 +70,7 @@ public class ClientNetworkInterface : BaseNetworkInterface
         }
         else
         {
-            
+
         }
     }
 
@@ -165,7 +165,7 @@ public class ClientNetworkInterface : BaseNetworkInterface
             case MessageIDs.MoveToRoom_ToClient :
             {
                 MoveToRoomPacket pkt = new MoveToRoomPacket(buffer);
-                guestEngine.MovePlayer(pkt.userID, pkt.room);
+                guestEngine.MovePlayer(pkt.userID, pkt.room, pkt.isForcedMove);
                 break;
             }
             case MessageIDs.Guess_ToClient :
