@@ -7,12 +7,14 @@ public struct MoveToRoomPacket : INetworkPacket
     public MessageIDs ID { get; private set; }
     public int userID;
     public RoomType room;
+    public bool isForcedMove;
 
-    public MoveToRoomPacket(bool isToServer, int userID, RoomType room)
+    public MoveToRoomPacket(bool isToServer, int userID, RoomType room, bool isForcedMove)
     {
         ID = isToServer ? MessageIDs.MoveToRoom_ToServer : MessageIDs.MoveToRoom_ToClient;
         this.userID = userID;
         this.room = room;
+        this.isForcedMove = isForcedMove;
     }
 
     public MoveToRoomPacket(byte[] buffer)
@@ -23,11 +25,13 @@ public struct MoveToRoomPacket : INetworkPacket
         userID = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(buffer, idx));
         idx += sizeof(Int32);
         room = (RoomType)IPAddress.NetworkToHostOrder(BitConverter.ToInt32(buffer, idx));
+        idx += sizeof(Int32);
+        isForcedMove = BitConverter.ToBoolean(buffer, idx);
     }
 
     public byte[] GetBytes()
     {
-        byte[] buffer = new byte[sizeof(Int32) + sizeof(Int32) + sizeof(Int32)];
+        byte[] buffer = new byte[sizeof(Int32) + sizeof(Int32) + sizeof(Int32) + sizeof(Boolean)];
         int idx = 0;
 
         byte[] tempBytes;
@@ -39,6 +43,9 @@ public struct MoveToRoomPacket : INetworkPacket
         tempBytes.CopyTo(buffer, idx);
         idx += sizeof(Int32);
         tempBytes = BitConverter.GetBytes(IPAddress.HostToNetworkOrder((int)room));
+        tempBytes.CopyTo(buffer, idx);
+        idx += sizeof(Int32);
+        tempBytes = BitConverter.GetBytes((isForcedMove));
         tempBytes.CopyTo(buffer, idx);
 
         return buffer;

@@ -206,7 +206,7 @@ public class GuestEngine : BaseEngine
         return false;
     }
 
-    public bool MovePlayer(int playerID, RoomType newRoom)
+    public bool MovePlayer(int playerID, RoomType newRoom, bool isForcedMove)
     {
         bool status = false;
         if (playerID == ID)
@@ -215,6 +215,12 @@ public class GuestEngine : BaseEngine
             player.currentRoom = newRoom;
             masterUI.DisableRoomSelection();
             Log(String.Format("Moved to {0}", newRoom));
+
+            if (isForcedMove)
+            {
+                masterUI.ShowGeneralNotification("Notice", String.Format("You were forcibly moved to {0}", newRoom));
+            }
+
             status = true;
         }
         else if (players.TryGetValue(playerID, out PlayerState otherPlayer))

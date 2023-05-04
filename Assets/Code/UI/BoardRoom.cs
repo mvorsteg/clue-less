@@ -39,7 +39,7 @@ public class BoardRoom : MonoBehaviour
 
     public void OnRoomClicked()
     {
-        MoveToRoomPacket pkt = new MoveToRoomPacket(true, engine.ID, type);
+        MoveToRoomPacket pkt = new MoveToRoomPacket(true, engine.ID, type, false);
         netInterface.SendMessage(pkt);
     }
 

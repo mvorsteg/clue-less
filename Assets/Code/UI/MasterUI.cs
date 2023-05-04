@@ -14,6 +14,7 @@ public class MasterUI : MonoBehaviour
     public TurnUI turnUI;
     public GameOverUI gameOverUI;
     public ActionUI actionUI;
+    public GeneralNotificationUI genaralNotificationUI;
     
     public GuestEngine engine;
 
@@ -22,6 +23,7 @@ public class MasterUI : MonoBehaviour
     public void StartGame(List<string> otherPlayers)
     {
         clueSheetUI.StartGame(otherPlayers);
+        cardsUI.StartGame();
         playersUI.StartGame();
     }
 
@@ -108,5 +110,10 @@ public class MasterUI : MonoBehaviour
     public void NotifyGameOver(string player, GameOverType type)
     {
         gameOverUI.NotifyGameOver(player, type);
+    }
+
+    public void ShowGeneralNotification(string title, string body)
+    {
+        genaralNotificationUI.ShowModal(title, body);
     }
 }
