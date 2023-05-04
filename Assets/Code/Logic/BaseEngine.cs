@@ -75,6 +75,11 @@ public class BaseEngine : MonoBehaviour
         return string.Empty;
     }
 
+    public virtual void ReturnToMenu()
+    {
+        
+    }
+
     protected void Log(string message)
     {
         if (logger != null)

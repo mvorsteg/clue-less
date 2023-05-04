@@ -37,6 +37,7 @@ public class ClientNetworkInterface : BaseNetworkInterface
     public void ConnectToServer()
     {
         Log("Starting connect thread");
+        bool connectSuccess = false;
         try
         {
             // attempt to connect to server
@@ -45,6 +46,7 @@ public class ClientNetworkInterface : BaseNetworkInterface
             Log("Connection successful");
             netPlayer = new NetworkEndpoint(tcpClient, this);
             networkStream = tcpClient.GetStream();
+            connectSuccess = true;
         }
         catch (SocketException e)
         {
@@ -54,15 +56,21 @@ public class ClientNetworkInterface : BaseNetworkInterface
         {
             Log(String.Format("Unexpected error: {0}\n{1}\n{2}", e.Message, e.InnerException, e.StackTrace));
         }
+        if (connectSuccess)
+            {
+            // send initial connect message so server knows our name
+            ConnectRequestPacket pkt = new ConnectRequestPacket(processName);
+            netPlayer.SendMessage(pkt);
 
-        // send initial connect message so server knows our name
-        ConnectRequestPacket pkt = new ConnectRequestPacket(processName);
-        netPlayer.SendMessage(pkt);
-
-        // begin processing messages from server 
-        if (tcpClient.Connected && isConnected)
+            // begin processing messages from server 
+            if (tcpClient.Connected && isConnected)
+            {
+                netPlayer.ContinuouslyGetMessages();
+            }
+        }
+        else
         {
-            netPlayer.ContinuouslyGetMessages();
+            
         }
     }
 

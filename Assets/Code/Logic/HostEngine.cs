@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class HostEngine : BaseEngine
 {
@@ -246,6 +247,7 @@ public class HostEngine : BaseEngine
                         // win
                         GameOverPacket pkt = new GameOverPacket(playerID, GameOverType.Win);
                         netInterface.Broadcast(NetworkConstants.BROADCAST_ALL_CLIENTS, pkt);
+                        return true;
                     }
                     else
                     {
@@ -254,6 +256,7 @@ public class HostEngine : BaseEngine
                         GameOverPacket pkt = new GameOverPacket(playerID, GameOverType.Lose);
                         netInterface.Broadcast(NetworkConstants.BROADCAST_ALL_CLIENTS, pkt);
                         EndTurn(playerID);
+                        return true;
                     }
                 }
                 else
@@ -337,6 +340,13 @@ public class HostEngine : BaseEngine
         //     Log(String.Format("Player{0} cannot end their turn right now", userID));
         // }
         // return false;
+    }
+
+    public override void ReturnToMenu()
+    {
+        base.ReturnToMenu();
+        netInterface.ShutDown();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
 }
