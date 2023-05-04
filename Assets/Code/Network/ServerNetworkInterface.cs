@@ -210,7 +210,7 @@ public class ServerNetworkInterface : BaseNetworkInterface
             {
                 MoveToRoomPacket pkt = new MoveToRoomPacket(buffer);
                 Log(String.Format("Client{0} requested to move to {1}", clientID, pkt.room.ToString()));
-                if (hostEngine.MovePlayer(clientID, pkt.room))
+                if (hostEngine.MovePlayer(clientID, pkt.room, false))
                 {
                     // MoveToRoomPacket outPkt = new MoveToRoomPacket(false, clientID, pkt.room);
                     // Broadcast(NetworkConstants.BROADCAST_ALL_CLIENTS, outPkt);

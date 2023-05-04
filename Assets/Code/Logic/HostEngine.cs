@@ -165,11 +165,18 @@ public class HostEngine : BaseEngine
         return true;
     }
 
-    public bool MovePlayer(int playerID, RoomType destRoom)
+    public bool MovePlayer(int playerID, RoomType destRoom, bool isForcedMove)
     {
         if (players.TryGetValue(playerID, out PlayerState playerState))
         {
-            if (state.turn == playerID && state.action == TurnAction.MoveRoom)
+            if (isForcedMove)
+            {
+                // do move
+                playerState.currentRoom = destRoom;
+                MoveToRoomPacket outPkt = new MoveToRoomPacket(false, playerID, destRoom);
+                netInterface.Broadcast(NetworkConstants.BROADCAST_ALL_CLIENTS, outPkt);
+            }
+            else if (state.turn == playerID && state.action == TurnAction.MoveRoom)
             {
                 if (board.IsValidMove(playerState.currentRoom, destRoom))
                 {
@@ -231,6 +238,17 @@ public class HostEngine : BaseEngine
                     {
                         SetTurn(state.turn, TurnAction.Idle);
                     }
+
+                    // also must move a player if their character was guessed!!!
+                    foreach (PlayerState player in players.Values)
+                    {
+                        if (player != null && player.character == character)
+                        {
+                            MovePlayer(player.playerID, room, true);
+                        }
+
+                    }
+                    
                     return true;
                 }
                 else
