@@ -12,7 +12,11 @@ public class BoardRoom : MonoBehaviour
     {
         set
         {
-            GetComponent<Button>().interactable = value;
+            if (TryGetComponent<GlowingButton>(out GlowingButton gb))
+            {
+                gb.SetInteractable(value);
+            }
+            
         }
     }
 
