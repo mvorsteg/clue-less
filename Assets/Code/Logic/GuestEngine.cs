@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GuestEngine : BaseEngine
 {
+    public ClientNetworkInterface netInterface;
     public PlayerState player;
     public MasterUI masterUI;
 
@@ -350,5 +352,12 @@ public class GuestEngine : BaseEngine
     public void ErrorOut()
     {
        masterUI.NotifyGameOver("", GameOverType.Error); 
+    }
+
+    public override void ReturnToMenu()
+    {
+        base.ReturnToMenu();
+        netInterface.ShutDown();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

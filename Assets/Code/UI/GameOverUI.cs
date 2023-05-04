@@ -6,6 +6,7 @@ public class GameOverUI : MonoBehaviour
 {
     public Text titleText, bodyText;
     public GameObject displayScreen;
+    public GameObject okButton, quitButton;
 
     private void Start()
     {
@@ -27,6 +28,8 @@ public class GameOverUI : MonoBehaviour
                 titleText.text = String.Format("{0} Loses", player);
                 bodyText.text = String.Format("{0}'s guess was incorrect.\nThey are out for the rest of the game.", player);
             }
+            okButton.SetActive(true);
+            quitButton.SetActive(false);
         }
         else if (type == GameOverType.Win)
         {
@@ -40,11 +43,15 @@ public class GameOverUI : MonoBehaviour
                 titleText.text = String.Format("{0} Wins", player);
                 bodyText.text = String.Format("{0}'s guess was correct.\nThey win!\nThanks for playing!", player);
             }
+            okButton.SetActive(false);
+            quitButton.SetActive(true);
         }
         else if (type == GameOverType.Error)
         {
             titleText.text = String.Format("Error");
             bodyText.text = String.Format("Unfortunately a communication error has occurred.\nThe game will not be able to continue.\nPlease ensure everyone playing has an internet connection.");
+            okButton.SetActive(false);
+            quitButton.SetActive(true);
         }
         displayScreen.SetActive(true);
     }

@@ -40,7 +40,10 @@ public class BaseNetworkInterface : MonoBehaviour
 
     public virtual void ShutDown()
     {
-        networkStream.Dispose();
+        if (networkStream != null)
+        {
+            networkStream.Dispose();
+        }
         isConnected = false;
     }
 
