@@ -112,8 +112,8 @@ public class MasterUI : MonoBehaviour
         gameOverUI.NotifyGameOver(player, type);
     }
 
-    public void ShowGeneralNotification(string title, string body)
+    public void ShowGeneralNotification(string title, string body, bool isOk)
     {
-        genaralNotificationUI.ShowModal(title, body);
+        genaralNotificationUI.ShowModal(title, body, isOk);
     }
 }

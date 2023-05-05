@@ -167,6 +167,7 @@ public class ServerNetworkInterface : BaseNetworkInterface
                 else
                 {
                     outPkt = new ConnectResponsePacket(false, clientID, assignedCharacter, allPlayers);
+                    SendMessage(clientID, outPkt);
                 }
                 
                 break;

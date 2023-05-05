@@ -74,6 +74,12 @@ public class HostEngine : BaseEngine
 
     public bool AddPlayer(int playerID, string name, out CharacterType assignedCharacter)
     {
+        if (isGameStarted)
+        {
+            Log(string.Format("Can't add player {0}, game already started", playerID));
+            assignedCharacter = CharacterType.Mustard;
+            return false;
+        }
         // find available character to assign
         Dictionary<CharacterType, bool> availableChars = new Dictionary<CharacterType, bool>();
         foreach (CharacterType character in Enum.GetValues(typeof(CharacterType)))
@@ -109,9 +115,10 @@ public class HostEngine : BaseEngine
 
     public override bool RemovePlayer(int playerID)
     {
-        if (!isGameStarted)
+        
+        if (players.TryGetValue(playerID, out PlayerState player))
         {
-            if (players.TryGetValue(playerID, out PlayerState player))
+            if (!isGameStarted)
             {
                 players.Remove(playerID);
                 
@@ -123,16 +130,16 @@ public class HostEngine : BaseEngine
             }
             else
             {
-                Log(String.Format("Failed to remove player {0}", playerID));
-                return false;
+                GameOverPacket pkt = new GameOverPacket(playerID, GameOverType.Error);
+                netInterface.Broadcast(playerID, pkt);
+                Log("Cannot remove player, game has already started");
+                return true;
             }
         }
         else
         {
-            GameOverPacket pkt = new GameOverPacket(playerID, GameOverType.Error);
-            netInterface.Broadcast(playerID, pkt);
-            Log("Cannot remove player, game has already started");
-            return true;
+            Log(String.Format("Failed to remove player {0}. They may have joined improperly", playerID));
+            return false;
         }
     }
 

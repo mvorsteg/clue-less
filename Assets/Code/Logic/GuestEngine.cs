@@ -218,7 +218,7 @@ public class GuestEngine : BaseEngine
 
             if (isForcedMove)
             {
-                masterUI.ShowGeneralNotification("Notice", String.Format("You were forcibly moved to {0}", newRoom));
+                masterUI.ShowGeneralNotification("Notice", String.Format("You were forcibly moved to {0}", newRoom), true);
             }
 
             status = true;
@@ -355,9 +355,9 @@ public class GuestEngine : BaseEngine
         masterUI.UpdatePlayerStatus(playerID, PlayerStatus.Lost);
     }
 
-    public void ErrorOut()
+    public void ErrorOut(string text)
     {
-       masterUI.NotifyGameOver("", GameOverType.Error); 
+       masterUI.ShowGeneralNotification("Error", text, false);
     }
 
     public override void ReturnToMenu()
