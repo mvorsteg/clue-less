@@ -20,6 +20,8 @@ public class GlowingButton : MonoBehaviour
     private bool isInteractable = false;
     private bool isSelected = false;
 
+    public UnityEvent onClick;
+
     private bool ShouldGlow
     {
         get { return isInteractable && !isSelected; }
@@ -70,7 +72,11 @@ public class GlowingButton : MonoBehaviour
 
     public void OnPointerClick()
     {
-        SetInteractable(false);
+        if (isInteractable)
+        {   
+            onClick.Invoke();
+            SetInteractable(false);
+        }
     }
 
     private IEnumerator ButtonGlowCoroutine()

@@ -392,6 +392,21 @@ MonoBehaviour:
   buttonGlowTransitionTime: 0.5
   buttonGlowHoldTime: 0.25
   glowOverlay: {fileID: 730865617348257110}
+  onClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1299084777281378939}
+        m_TargetAssemblyTypeName: BoardRoom, Assembly-CSharp
+        m_MethodName: OnRoomClicked
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &4960013687072729549
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -441,18 +456,6 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1299084777281378939}
-          m_TargetAssemblyTypeName: BoardRoom, Assembly-CSharp
-          m_MethodName: OnRoomClicked
-          m_Mode: 1
-          m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
         - m_Target: {fileID: 4521780369001767250}
           m_TargetAssemblyTypeName: GlowingButton, Assembly-CSharp
           m_MethodName: OnPointerClick
