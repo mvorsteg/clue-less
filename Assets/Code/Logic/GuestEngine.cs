@@ -12,7 +12,18 @@ public class GuestEngine : BaseEngine
 
     private Tuple<CharacterType, WeaponType, RoomType> lastGuess;
 
+    private bool isReadyForNextReveal = true;
+    private Queue<Tuple<int, int, ClueType, CharacterType, WeaponType, RoomType>> revealQueue = new Queue<Tuple<int, int, ClueType, CharacterType, WeaponType, RoomType>>();
+
     public int ID { get => player.playerID; }
+
+    private void Update()
+    {
+        if (isReadyForNextReveal && revealQueue.TryDequeue(out Tuple<int, int, ClueType, CharacterType, WeaponType, RoomType> revealData))
+        {
+            Reveal(revealData.Item1, revealData.Item2, revealData.Item3, revealData.Item4, revealData.Item5, revealData.Item6);
+        }
+    }
 
     public override bool StartGame()
     {
@@ -274,6 +285,16 @@ public class GuestEngine : BaseEngine
         return cardsToReveal;
     }
 
+    public void SetReadyForReveal(bool value)
+    {
+        isReadyForNextReveal = value;
+    }
+    
+    public void EnqueueReveal(int sendID, int recvID, ClueType clueType, CharacterType character, WeaponType weapon, RoomType room)
+    {
+        revealQueue.Enqueue(Tuple.Create(sendID, recvID, clueType, character, weapon, room));
+    }
+
     public override bool Reveal(int sendID, int recvID, ClueType clueType, CharacterType character, WeaponType weapon, RoomType room)
     {
         if (recvID == ID)
@@ -321,6 +342,7 @@ public class GuestEngine : BaseEngine
                     }
                 }
 
+                isReadyForNextReveal = false;
                 masterUI.NotifyReveal(receivedCard, otherPlayer.playerName);
                 Log(String.Format("{0} revealed card {1}", otherPlayer.playerName, clueType == ClueType.Character ? character : clueType == ClueType.Weapon ? weapon : room));
             }

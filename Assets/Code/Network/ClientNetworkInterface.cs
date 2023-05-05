@@ -191,7 +191,7 @@ public class ClientNetworkInterface : BaseNetworkInterface
             case MessageIDs.Reveal_ToClient :
             {
                 RevealPacket pkt = new RevealPacket(buffer);
-                guestEngine.Reveal(pkt.sendID, pkt.recvID, pkt.clueType, pkt.character, pkt.weapon, pkt.room);
+                guestEngine.EnqueueReveal(pkt.sendID, pkt.recvID, pkt.clueType, pkt.character, pkt.weapon, pkt.room);
                 break;
             }
             case MessageIDs.WinLose_ToClient :
