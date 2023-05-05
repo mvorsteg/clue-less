@@ -12,11 +12,23 @@ public class ClientNetworkInterface : BaseNetworkInterface
     private NetworkEndpoint netPlayer;
     private GuestEngine guestEngine;
 
+    private bool connectFailure = false;
+
     protected override void Awake()
     {
         base.Awake();
         tcpClient = new TcpClient();   
-    }    
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+        // check to see if server failure
+        if (connectFailure)
+        {
+            guestEngine.ErrorOut("Failed to connect to server.\nIs it running?");
+        }
+    }
 
     public override void Initialize(IPAddress ipAddress, int portNum, BaseEngine engine, ConsoleLogger logger, string processName)
     {
@@ -36,8 +48,8 @@ public class ClientNetworkInterface : BaseNetworkInterface
 
     public void ConnectToServer()
     {
-        Log("Starting connect thread");
         bool connectSuccess = false;
+        Log("Starting connect thread");
         try
         {
             // attempt to connect to server
@@ -57,7 +69,7 @@ public class ClientNetworkInterface : BaseNetworkInterface
             Log(String.Format("Unexpected error: {0}\n{1}\n{2}", e.Message, e.InnerException, e.StackTrace));
         }
         if (connectSuccess)
-            {
+        {
             // send initial connect message so server knows our name
             ConnectRequestPacket pkt = new ConnectRequestPacket(processName);
             netPlayer.SendMessage(pkt);
@@ -70,7 +82,8 @@ public class ClientNetworkInterface : BaseNetworkInterface
         }
         else
         {
-
+            connectFailure = true;
+            Log("Failed to connect to server");
         }
     }
 
@@ -106,6 +119,7 @@ public class ClientNetworkInterface : BaseNetworkInterface
                     }
                     else
                     {
+                        guestEngine.ErrorOut("Rejected by server.\nIt may be full or a game may be in session already.");
                         Log(String.Format("Rejected by server"));
                     }
                 }
@@ -193,7 +207,7 @@ public class ClientNetworkInterface : BaseNetworkInterface
                 }
                 else if (pkt.type == GameOverType.Error)
                 {
-                    guestEngine.ErrorOut();
+                    guestEngine.ErrorOut("Unfortunately a communication error has occurred.\nThe game will not be able to continue.\nPlease ensure everyone playing has an internet connection.");
                 }
                 else
                 {
