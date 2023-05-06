@@ -20,9 +20,9 @@ public class MasterUI : MonoBehaviour
 
     private CharacterType playerChar;
 
-    public void StartGame(List<string> otherPlayers)
+    public void StartGame(List<string> playerNames)
     {
-        clueSheetUI.StartGame(otherPlayers);
+        clueSheetUI.StartGame(playerNames);
         cardsUI.StartGame();
         playersUI.StartGame();
     }
@@ -66,6 +66,10 @@ public class MasterUI : MonoBehaviour
     public void SetCards(List<ClueCard> cards)
     {
         cardsUI.SetCards(cards);
+        foreach (ClueCard card in cards)
+        {
+            clueSheetUI.EnqueueMark(card, engine.player.playerName);
+        }
     }
 
     public void EnableMoveSelection()

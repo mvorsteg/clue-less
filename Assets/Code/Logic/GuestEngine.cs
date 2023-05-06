@@ -28,15 +28,15 @@ public class GuestEngine : BaseEngine
     public override bool StartGame()
     {
         base.StartGame();
-        List<string> otherNames = new List<string>();
+        List<string> names = new List<string> { player.playerName };
         foreach (PlayerState otherPlayer in players.Values)
         {
             if (otherPlayer != null)
             {
-                otherNames.Add(otherPlayer.playerName);
+                names.Add(otherPlayer.playerName);
             }
         }
-        masterUI.StartGame(otherNames);
+        masterUI.StartGame(names);
         return true;
     }
 
