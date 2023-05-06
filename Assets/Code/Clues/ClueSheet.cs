@@ -9,6 +9,8 @@ public class ClueSheet : MonoBehaviour
     public GameObject[] columns;
     public GameObject initialScreen;
 
+    private Queue<Tuple<ClueCard, string>> markQueue = new Queue<Tuple<ClueCard, string>>();
+
     private bool initialized = false;
     
     private void Start()
@@ -53,7 +55,15 @@ public class ClueSheet : MonoBehaviour
         }
     }
 
-    public void StartGame(List<string> otherPlayers)
+    private void Update()
+    {
+        if (markQueue.TryDequeue(out Tuple<ClueCard, string> entry))
+        {
+            Mark(entry.Item1, entry.Item2);
+        }
+    }
+
+    public void StartGame(List<string> playerNames)
     {
         initialScreen.SetActive(false);
         // quick and dirty fix to get around initialization issue (if StartGame called before Start we disable all cols)
@@ -61,16 +71,21 @@ public class ClueSheet : MonoBehaviour
         {
             Start();
         }
-        for (int i = 0; i < otherPlayers.Count; i++)
+        for (int i = 0; i < playerNames.Count; i++)
         {
             Text text = playerLabelParent.GetChild(i).GetComponent<Text>();
-            text.text = otherPlayers[i];
+            text.text = playerNames[i];
             text.gameObject.SetActive(true);
             columns[i].SetActive(true);
         }
     }
 
-    public void Mark(ClueCard card, string playerName)
+    public void EnqueueMark(ClueCard card, string playerName)
+    {
+        markQueue.Enqueue(Tuple.Create(card, playerName));
+    }
+
+    private void Mark(ClueCard card, string playerName)
     {
         int rowNum = -1;
         int colNum = -1;

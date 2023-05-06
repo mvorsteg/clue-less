@@ -53,7 +53,7 @@ public class RevealUI : MonoBehaviour
 
     public void MarkReveal()
     {
-        clueSheet.Mark(currentCard.Item1, currentCard.Item2);
+        clueSheet.EnqueueMark(currentCard.Item1, currentCard.Item2);
     }
 
     public void SelectReveal(ClueCard card)

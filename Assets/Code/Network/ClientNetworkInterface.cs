@@ -79,6 +79,8 @@ public class ClientNetworkInterface : BaseNetworkInterface
             {
                 netPlayer.ContinuouslyGetMessages();
             }
+            // server disconnected
+            connectFailure = true;
         }
         else
         {
