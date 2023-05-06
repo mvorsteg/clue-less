@@ -3,13 +3,15 @@ using UnityEngine.UI;
 
 public class ClueSheetCell : MonoBehaviour
 {
-    public ClueMark mark;
+    public ClueMark mark = ClueMark.Blank;
     public Text buttonText;
 
     private void Start()
     {
-        mark = ClueMark.Blank;
-        buttonText.text = "";
+        if (buttonText.text == "Button")
+        {
+            buttonText.text = "";
+        }
     }
 
     public void Mark()
@@ -28,6 +30,21 @@ public class ClueSheetCell : MonoBehaviour
                 buttonText.text = "";
                 break;
             }
+        }
+    }
+
+    public void Mark(bool value)
+    {
+        if (value)
+        {
+            mark = ClueMark.X;
+            buttonText.text = "X";
+        }
+        else
+        {
+            mark = ClueMark.Blank;
+            buttonText.text = "";
+            
         }
     }
 }
