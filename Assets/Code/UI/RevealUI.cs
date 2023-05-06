@@ -13,11 +13,15 @@ public class RevealUI : MonoBehaviour
     public Button revealActionButton;
     private ClientNetworkInterface netInterface;
     private GuestEngine engine;
+    private ClueSheet clueSheet;
+
+    private Tuple<ClueCard, string> currentCard;
 
     private void Start()
     {
         netInterface = FindObjectOfType<ClientNetworkInterface>();
         engine = FindObjectOfType<GuestEngine>();
+        clueSheet = FindObjectOfType<ClueSheet>(true);
         sendRevealScreen.SetActive(false);
         receiveRevealScreen.SetActive(false);
     }
@@ -41,9 +45,15 @@ public class RevealUI : MonoBehaviour
     public void AcceptReveal(ClueCard card, string playerName)
     {
         receivedCardDisplay.Initialize(card);
+        currentCard = new Tuple<ClueCard, string>(card, playerName);
 
         receiveText.text = String.Format("{0} has revealed {1}", playerName, card.cardName);
         receiveRevealScreen.SetActive(true);
+    }
+
+    public void MarkReveal()
+    {
+        clueSheet.Mark(currentCard.Item1, currentCard.Item2);
     }
 
     public void SelectReveal(ClueCard card)
