@@ -80,6 +80,16 @@ public class HostEngine : BaseEngine
             assignedCharacter = CharacterType.Mustard;
             return false;
         }
+        // check if name already taken
+        foreach (PlayerState player in players.Values)
+        {
+            if (player.playerName == name)
+            {
+                assignedCharacter = CharacterType.Mustard;
+                return false;
+            }
+        }
+
         // find available character to assign
         Dictionary<CharacterType, bool> availableChars = new Dictionary<CharacterType, bool>();
         foreach (CharacterType character in Enum.GetValues(typeof(CharacterType)))
